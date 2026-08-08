@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>CV Builder — Wizard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@400;600;700&family=Merriweather:wght@400;700&family=Lora:wght@400;600;700&family=EB+Garamond:wght@400;600;700&family=Libre+Baskerville:wght@400;700&family=PT+Serif:wght@400;700&family=Crimson+Text:wght@400;600;700&family=Cormorant+Garamond:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&family=Poppins:wght@400;600;700&family=Montserrat:wght@400;600;700&family=Roboto:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700&family=Raleway:wght@400;600;700&family=Nunito:wght@400;600;700&family=Work+Sans:wght@400;600;700&family=Karla:wght@400;700&family=Rubik:wght@400;600;700&family=Josefin+Sans:wght@400;600;700&family=Fira+Sans:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&family=DM+Serif+Display&family=Bitter:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Serif:wght@400;600;700&display=swap');
+  * { box-sizing: border-box; }
+  body{
+    margin:0;
+    font-family:'Inter',Arial,sans-serif;
+    background:#EDEAE0;
+    color:#2b2b28;
+  }
+  .app{
+    display:grid;
+    grid-template-columns:440px 1fr;
+    min-height:100vh;
+  }
+  /* ============ FORM SIDE ============ */
+  .form-side{
+    background:#EDEAE0;
+    border-right:1px solid #d8d4c4;
+    padding:28px 26px 30px;
+    overflow-y:auto;
+    max-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .eyebrow{
+    font-size:10.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:#8a6d22;
+    font-weight:700;
+  }
+  h1.title{
+    font-family:Georgia,serif;
+    font-size:22px;
+    font-weight:700;
+    margin:6px 0 2px;
+    color:#3b3222;
+  }
+  .subtitle{
+    font-size:12.5px;
+    color:#6b665a;
+    margin-bottom:18px;
+    line-height:1.5;
+  }
+  /* ---- wizard progress ---- */
+  .wizard-progress-wrap{margin-bottom:20px;}
+  .wizard-progress-bar{width:100%;height:6px;background:#e2ddc9;border-radius:3px;overflow:hidden;}
+  .wizard-progress-fill{height:100%;background:#d3a75c;border-radius:3px;transition:width .2s ease;}
+  .wizard-progress-label{font-size:11px;color:#8a8574;margin-top:6px;display:flex;justify-content:space-between;}
+  .wizard-dots{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+  .wizard-dot{width:9px;height:9px;border-radius:50%;background:#d8d4c4;cursor:pointer;flex-shrink:0;}
+  .wizard-dot.active{background:#3b3222;}
+  .wizard-dot.done{background:#d3a75c;}
+
+  .wizard-step{display:none;flex:1;flex-direction:column;}
+  .wizard-step.active{display:flex;}
+  .step-kicker{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8a6d22;margin-bottom:4px;}
+  .step-question{font-family:Georgia,serif;font-size:19px;font-weight:700;color:#3b3222;margin:0 0 6px;line-height:1.3;}
+  .step-help{font-size:12.5px;color:#6b665a;margin-bottom:18px;line-height:1.5;}
+
+  label{display:block;font-size:11.5px;font-weight:700;color:#6b665a;margin:10px 0 4px;}
+  input[type=text], input[type=email], input[type=tel], textarea{
+    width:100%;
+    font-family:'Inter',Arial,sans-serif;
+    font-size:13.5px;
+    padding:8px 10px;
+    border:1px solid #d8d4c4;
+    border-radius:4px;
+    background:#fff;
+    color:#2b2b28;
+  }
+  input:focus, textarea:focus{ outline:2px solid #d3a75c; outline-offset:1px; border-color:#d3a75c; }
+  select{
+    width:100%;
+    font-family:'Inter',Arial,sans-serif;
+    font-size:13.5px;
+    padding:8px 10px;
+    border:1px solid #d8d4c4;
+    border-radius:4px;
+    background:#fff;
+    color:#2b2b28;
+    cursor:pointer;
+  }
+  select:focus{ outline:2px solid #d3a75c; outline-offset:1px; border-color:#d3a75c; }
+  textarea{resize:vertical;min-height:56px;line-height:1.45;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .hint{font-size:11px;color:#8a8574;margin-top:3px;}
+  .photo-upload{display:flex;align-items:center;gap:14px;margin-top:10px;}
+  .photo-preview{
+    width:66px;height:80px;border-radius:4px;background:#3b3222;
+    border:1.5px dashed rgba(255,255,255,.35);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    flex-shrink:0;color:#e0cfa0;font-size:9.5px;text-align:center;
+  }
+  .photo-preview img{width:100%;height:100%;object-fit:cover;}
+  .btn{
+    font-family:'Inter',Arial,sans-serif;font-size:12.5px;font-weight:700;
+    padding:8px 13px;border-radius:4px;border:1px solid #d8d4c4;
+    background:#fff;color:#2b2b28;cursor:pointer;transition:border-color .15s,color .15s;
+  }
+  .btn:hover{border-color:#d3a75c;color:#8a6d22;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-remove{border-color:transparent;color:#9c4444;font-size:11.5px;padding:4px 6px;cursor:pointer;}
+  .btn-remove:hover{text-decoration:underline;}
+  .btn-add{width:100%;margin-top:6px;border:1px dashed #d3a75c;color:#8a6d22;background:transparent;padding:9px;}
+  .btn-add:hover{background:rgba(211,167,92,.1);}
+  .item-card{background:#fff;border:1px solid #d8d4c4;border-radius:6px;padding:12px 12px 6px;margin-bottom:10px;}
+  .item-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
+  .item-card-label{font-size:10.5px;color:#8a8574;letter-spacing:.06em;font-weight:700;text-transform:uppercase;}
+
+  /* ---- design option controls ---- */
+  .option-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .template-option{
+    flex:1 1 auto;min-width:96px;border:1.5px solid #d8d4c4;border-radius:6px;background:#fff;
+    padding:8px 8px 7px;cursor:pointer;text-align:center;transition:border-color .15s;
+  }
+  .template-option:hover{border-color:#d3a75c;}
+  .template-option.active{border-color:#3b3222;box-shadow:0 0 0 1px #3b3222;}
+  .template-option .tpl-thumb{width:100%;height:44px;border-radius:3px;margin-bottom:6px;display:grid;grid-template-columns:34% 1fr;overflow:hidden;border:1px solid #d8d4c4;}
+  .template-option .tpl-thumb i{background:#3b3222;}
+  .template-option .tpl-thumb b{background:#f4f1e6;}
+  .tpl-thumb.tpl-modern{grid-template-columns:1fr 34%;}
+  .tpl-thumb.tpl-modern i{background:#eee6d2;order:2;}
+  .tpl-thumb.tpl-modern b{background:#f4f1e6;order:1;}
+  .tpl-thumb.tpl-banner{grid-template-columns:1fr;grid-template-rows:38% 1fr;}
+  .tpl-thumb.tpl-banner i{background:#3b3222;}
+  .tpl-thumb.tpl-banner b{background:#f4f1e6;}
+  .template-option span{font-size:11px;font-weight:700;color:#3b3222;}
+
+  .shape-option{
+    border:1.5px solid #d8d4c4;border-radius:6px;background:#fff;cursor:pointer;
+    padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 auto;min-width:76px;
+  }
+  .shape-option:hover{border-color:#d3a75c;}
+  .shape-option.active{border-color:#3b3222;box-shadow:0 0 0 1px #3b3222;}
+  .shape-option .shape-swatch{width:28px;height:28px;background:#3b3222;}
+  .shape-option span{font-size:10.5px;font-weight:700;color:#3b3222;text-align:center;}
+
+  .color-swatch{
+    width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;
+    box-shadow:0 0 0 1px #d8d4c4;flex-shrink:0;
+  }
+  .color-swatch.active{border-color:#fff;box-shadow:0 0 0 2px #3b3222;}
+  .color-swatch-wrap{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;align-items:center;margin-top:8px;max-width:280px;}
+  .custom-color-wrap{display:flex;align-items:center;gap:8px;margin-top:10px;}
+  .custom-color-wrap input[type=color]{width:34px;height:28px;padding:0;border:1px solid #d8d4c4;border-radius:4px;cursor:pointer;background:#fff;}
+  .custom-color-wrap label{margin:0;}
+
+  /* ---- font picker ---- */
+  .font-option-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;max-height:280px;overflow-y:auto;padding-right:4px;}
+  .font-option{
+    border:1.5px solid #d8d4c4;border-radius:6px;background:#fff;cursor:pointer;
+    padding:9px 10px;text-align:left;transition:border-color .15s;
+  }
+  .font-option:hover{border-color:#d3a75c;}
+  .font-option.active{border-color:#3b3222;box-shadow:0 0 0 1px #3b3222;background:#fbf8ee;}
+  .font-option .font-preview{font-size:15px;color:#3b3222;line-height:1.2;}
+  .font-option .font-label{font-size:10px;color:#8a8574;margin-top:3px;text-transform:uppercase;letter-spacing:.04em;}
+
+  /* ---- language option ---- */
+  .lang-option{
+    flex:1;border:1.5px solid #d8d4c4;border-radius:6px;background:#fff;cursor:pointer;
+    padding:14px 10px;text-align:center;transition:border-color .15s;
+  }
+  .lang-option:hover{border-color:#d3a75c;}
+  .lang-option.active{border-color:#3b3222;box-shadow:0 0 0 1px #3b3222;background:#fbf8ee;}
+  .lang-option .flag{font-size:24px;display:block;margin-bottom:6px;}
+  .lang-option .lang-name{font-size:13px;font-weight:700;color:#3b3222;}
+  .lang-option .lang-sub{font-size:10.5px;color:#8a8574;margin-top:2px;}
+
+  /* ---- wizard nav ---- */
+  .wizard-nav{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    margin-top:auto;padding-top:20px;border-top:1px solid #d8d4c4;
+  }
+  .wizard-nav .spacer{flex:1;}
+  .btn-primary{background:#3b3222;color:#fff;border:1px solid #3b3222;}
+  .btn-primary:hover{background:#8a6d22;border-color:#8a6d22;color:#fff;}
+  .skip-link{font-size:11.5px;color:#8a8574;text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;}
+  .skip-link:hover{color:#8a6d22;}
+
+  /* ---- review step ---- */
+  .review-list{list-style:none;padding:0;margin:0;}
+  .review-list li{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 0;border-bottom:1px solid #e2ddc9;font-size:13px;
+  }
+  .review-list li:last-child{border-bottom:none;}
+  .review-list .review-status{font-size:11px;color:#8a8574;}
+  .review-list .review-status.filled{color:#4a7a4a;font-weight:700;}
+  .review-list .review-edit{font-size:11.5px;color:#8a6d22;text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;}
+
+  /* ============ PREVIEW SIDE ============ */
+  .preview-side{
+    background:#EDEAE0;padding:26px 34px 60px;overflow-y:auto;max-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  .preview-toolbar{width:100%;max-width:850px;display:flex;justify-content:flex-end;gap:10px;margin-bottom:16px;}
+  .cv-scale-wrap{width:100%;display:flex;justify-content:center;}
+
+  /* ---- replicated CV template ---- */
+  .cv-container{
+    max-width:850px;width:850px;margin:0 auto;background:#ffffff;
+    box-shadow:0 6px 24px rgba(0,0,0,0.12);
+    display:grid;grid-template-columns:280px 1fr;
+    font-family:var(--cv-font, 'Georgia','Times New Roman',serif);color:#2b2b28;
+    min-height:1100px;
+  }
+  .cv-container{
+    --sidebar-bg:#3b3222; --sidebar-text:#f2f0e6; --accent:#d3a75c;
+    --sidebar-border:rgba(242,240,230,0.25); --sidebar-border-strong:rgba(242,240,230,0.4);
+    --sidebar-placeholder:#e0cfa0; --cv-font:'Georgia','Times New Roman',serif;
+  }
+  .sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);padding:40px 28px;}
+  .sidebar h1{font-size:24px;margin:0 0 4px 0;line-height:1.2;font-weight:600;}
+  .sidebar .role{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:30px;}
+  .sidebar h2{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--sidebar-border);padding-bottom:6px;margin:28px 0 12px 0;}
+  .sidebar p, .sidebar li{font-size:13.5px;line-height:1.6;margin:0 0 6px 0;}
+  .sidebar ul{padding-left:18px;margin:0;}
+  .contact-item{display:flex;gap:8px;margin-bottom:8px;font-size:13px;align-items:flex-start;}
+  .contact-item span{min-width:0;word-break:break-word;overflow-wrap:anywhere;}
+  .photo-box{
+    width:140px;height:170px;background:rgba(242,240,230,0.08);
+    border:2px dashed var(--sidebar-border-strong);
+    margin:0 auto 24px auto;display:flex;align-items:center;justify-content:center;
+    text-align:center;overflow:hidden;transition:border-radius .15s,clip-path .15s;
+  }
+  .photo-box img{width:100%;height:100%;object-fit:cover;}
+  .photo-box span{font-size:11.5px;color:var(--sidebar-placeholder);font-style:italic;padding:8px;line-height:1.4;}
+  .placeholder{color:var(--sidebar-placeholder);font-style:italic;}
+  .placeholder-main{color:#999;font-style:italic;}
+  .main{padding:40px 36px;}
+  .main h2{font-size:15px;letter-spacing:1.5px;text-transform:uppercase;color:#3b3222;border-bottom:2px solid var(--accent);padding-bottom:6px;margin:0 0 16px 0;}
+  .main section{margin-bottom:30px;}
+  .summary{font-size:14.5px;line-height:1.7;color:#3a3a36;}
+  .entry{margin-bottom:18px;}
+  .entry:last-child{margin-bottom:0;}
+  .entry-header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;}
+  .entry-title{font-weight:700;font-size:15px;color:#3b3222;}
+  .entry-date{font-size:12.5px;color:#7a7a72;white-space:nowrap;}
+  .entry-subtitle{font-size:13.5px;font-style:italic;color:#555;margin:2px 0 6px 0;}
+  .entry ul{margin:6px 0 0 0;padding-left:20px;}
+  .entry li{font-size:13.5px;line-height:1.6;margin-bottom:4px;color:#3a3a36;}
+  .skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;list-style:none;padding-left:0;}
+  .skills-grid li{font-size:13.5px;color:#3a3a36;}
+  .skills-grid li:before{content:"— ";color:var(--accent);}
+
+  /* ---- template: modern (sidebar on right, sans-serif) ---- */
+  .cv-container.template-modern{grid-template-columns:1fr 260px;font-family:var(--cv-font, 'Inter',Arial,sans-serif);}
+  .template-modern .sidebar{order:2;border-left:5px solid var(--accent);}
+  .template-modern .main{order:1;padding:40px 32px;}
+  .template-modern .main h2{border-bottom:none;background:var(--accent);color:#2b2321;padding:6px 12px;border-radius:3px;letter-spacing:1px;}
+  .template-modern .entry-title, .template-modern .p-name{font-family:inherit;}
+  .template-modern #p-name{font-family:inherit;}
+  .template-modern .skills-grid li:before{content:"";display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;margin-right:8px;vertical-align:middle;}
+
+  /* ---- template: banner (full-width header, sidebar stacks as info band) ---- */
+  .cv-container.template-banner{grid-template-columns:1fr;}
+  .template-banner .sidebar{
+    display:grid;
+    grid-template-columns:130px 1fr 1fr;
+    grid-template-areas:
+      "photo name name"
+      "photo role role"
+      "contact contact contact"
+      "profile profile profile"
+      "skills lang cert";
+    column-gap:26px;row-gap:4px;align-items:start;padding:32px 40px;
+  }
+  .template-banner .photo-box{grid-area:photo;margin:0;width:120px;height:150px;}
+  .template-banner #p-name{grid-area:name;align-self:end;font-size:28px;}
+  .template-banner .role{grid-area:role;margin-bottom:6px;}
+  .template-banner .contact-block{grid-area:contact;}
+  .template-banner .contact-item{display:inline-flex;margin-right:18px;}
+  .template-banner .profile-block{grid-area:profile;}
+  .template-banner .skills-block{grid-area:skills;}
+  .template-banner .lang-block{grid-area:lang;}
+  .template-banner .cert-block{grid-area:cert;}
+  .template-banner .main{padding:34px 36px;}
+
+  /* ---- splash / gate screen ---- */
+  html, body{ height:100%; }
+  #splash-gate{
+    position:fixed; inset:0; width:100vw; height:100vh; z-index:9999;
+    background:#000; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:opacity .6s ease;
+  }
+  #splash-gate img{
+    width:100vw; height:100vh; object-fit:contain; display:block; user-select:none; -webkit-user-drag:none;
+  }
+  #splash-gate.fading{ opacity:0; pointer-events:none; }
+  #splash-gate.hidden{ display:none; }
+  .app{ display:none; }
+  .app.app-ready{ display:grid; }
+
+  @media (max-width:1000px){ .app{grid-template-columns:1fr;} .form-side,.preview-side{max-height:none;} }
+
+  /* ============ MOBILE PORTRAIT OPTIMIZATION ============ */
+  @media (max-width:640px){
+    .form-side{padding:18px 16px 22px;}
+    .preview-side{padding:16px 12px 40px;}
+    h1.title{font-size:19px;}
+    .subtitle{font-size:12px;margin-bottom:14px;}
+    .step-question{font-size:17px;}
+    .step-help{font-size:12px;margin-bottom:14px;}
+
+    /* Forms: stack two-column rows on narrow screens */
+    .row2{grid-template-columns:1fr;gap:0;}
+
+    /* Option pickers: allow comfortable wrapping instead of forced min-width overflow */
+    .template-option{min-width:calc(50% - 4px);flex:1 1 calc(50% - 4px);}
+    .shape-option{min-width:calc(33.333% - 6px);flex:1 1 calc(33.333% - 6px);}
+    .font-option-row{grid-template-columns:1fr;max-height:240px;}
+    .color-swatch-wrap{grid-template-columns:repeat(6,1fr);max-width:100%;}
+    .lang-option{padding:12px 6px;}
+
+    /* Wizard progress + dots */
+    .wizard-progress-label{font-size:10.5px;}
+    .wizard-dots{gap:4px;}
+    .wizard-dot{width:8px;height:8px;}
+
+    /* Bottom nav: keep buttons reachable with thumb, avoid squeezing */
+    .wizard-nav{flex-wrap:wrap;padding-top:16px;}
+    .wizard-nav .btn{padding:10px 14px;font-size:13px;}
+    .wizard-nav .spacer{flex-basis:100%;order:1;height:0;}
+    #btn-back{order:2;}
+    .skip-link{order:3;font-size:12px;}
+    #btn-next{order:4;flex:1;}
+    #download-btn-step{order:4;flex:1;}
+
+    /* Photo upload row wraps cleanly */
+    .photo-upload{flex-wrap:wrap;gap:10px;}
+
+    /* Preview toolbar */
+    .preview-toolbar{justify-content:center;margin-bottom:12px;}
+    .preview-toolbar .btn{width:100%;text-align:center;}
+
+    /* Scale the fixed-width CV sheet down to fit the viewport, no horizontal scroll */
+    .cv-scale-wrap{overflow:visible;}
+  }
+
+  @media print{
+    @page{ margin:0; size:A4; }
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
+    .form-side, .preview-toolbar{display:none !important;}
+    .app{display:block;}
+    .preview-side{padding:0;background:#fff;max-height:none;}
+    .cv-container{box-shadow:none;width:210mm !important;max-width:210mm !important;min-height:297mm;margin:0;}
+    body{background:#fff;}
+  }
+</style>
+</head>
+<body>
+
+<div id="splash-gate">
+  <img id="splash-img" src="Logo.png" alt="">
+</div>
+
+<div class="app" id="app-root">
+
+  <!-- ============ FORM SIDE (WIZARD) ============ -->
+  <div class="form-side">
+    <div class="eyebrow">CV Builder</div>
+    <h1 class="title" id="app-title">Panduan Langkah demi Langkah</h1>
+    <p class="subtitle" id="app-subtitle">Jawab pertanyaan satu per satu. Tampilan CV di kanan akan otomatis diperbarui setiap kali Anda mengisi.</p>
+
+    <div class="wizard-progress-wrap">
+      <div class="wizard-progress-bar"><div class="wizard-progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="wizard-progress-label"><span id="progress-text">Langkah 1 dari 15</span><span id="progress-step-name"></span></div>
+      <div class="wizard-dots" id="wizard-dots"></div>
+    </div>
+
+    <!-- STEP 0: CV LANGUAGE -->
+    <div class="wizard-step" data-step="0">
+      <div class="step-kicker">Langkah 1</div>
+      <h2 class="step-question">CV ini mau dibuat dalam bahasa apa?</h2>
+      <p class="step-help">Judul-judul bagian pada CV (Contact, Education, dst.) akan otomatis mengikuti pilihan ini. Isi yang Anda ketik sendiri (nama, deskripsi, dll.) tetap sesuai apa yang Anda tulis.</p>
+      <div class="option-row">
+        <div class="lang-option active" data-lang="id">
+          <span class="flag">🇮🇩</span>
+          <div class="lang-name">Bahasa Indonesia</div>
+          <div class="lang-sub">Judul bagian dalam Bahasa Indonesia</div>
+        </div>
+        <div class="lang-option" data-lang="en">
+          <span class="flag">🇬🇧</span>
+          <div class="lang-name">English</div>
+          <div class="lang-sub">Section titles in English</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: DESIGN -->
+    <div class="wizard-step" data-step="1">
+      <div class="step-kicker" data-i18n="step_design_kicker">Langkah 2</div>
+      <h2 class="step-question" data-i18n="step_design_q">Pilih tampilan CV Anda</h2>
+      <p class="step-help" data-i18n="step_design_help">Pilih model tata letak, bentuk foto, dan warna sidebar. Semua bisa diubah lagi kapan saja.</p>
+
+      <label data-i18n="label_template">Model CV</label>
+      <div class="option-row" id="template-picker">
+        <div class="template-option active" data-template="classic">
+          <div class="tpl-thumb"><i></i><b></b></div>
+          <span>Classic</span>
+        </div>
+        <div class="template-option" data-template="modern">
+          <div class="tpl-thumb tpl-modern"><i></i><b></b></div>
+          <span>Modern</span>
+        </div>
+        <div class="template-option" data-template="banner">
+          <div class="tpl-thumb tpl-banner"><i></i><b></b></div>
+          <span>Banner</span>
+        </div>
+      </div>
+
+      <label style="margin-top:18px;" data-i18n="label_shape">Bentuk foto</label>
+      <div class="option-row" id="shape-picker"></div>
+
+      <label style="margin-top:18px;" data-i18n="label_color">Warna sidebar</label>
+      <div class="color-swatch-wrap" id="color-picker">
+        <div class="color-swatch active" data-color="#3b3222" data-accent="#d3a75c" style="background:#3b3222;" title="Espresso Gold"></div>
+        <div class="color-swatch" data-color="#1f2d3d" data-accent="#7fa8c9" style="background:#1f2d3d;" title="Navy Steel"></div>
+        <div class="color-swatch" data-color="#20342b" data-accent="#8fbf8a" style="background:#20342b;" title="Forest"></div>
+        <div class="color-swatch" data-color="#2b2b2b" data-accent="#e0a458" style="background:#2b2b2b;" title="Charcoal"></div>
+        <div class="color-swatch" data-color="#3d1f24" data-accent="#d98c7a" style="background:#3d1f24;" title="Maroon"></div>
+        <div class="color-swatch" data-color="#e8e1d0" data-accent="#8a6d22" style="background:#e8e1d0;" title="Soft Sand"></div>
+        <div class="color-swatch" data-color="#1a1a2e" data-accent="#e94560" style="background:#1a1a2e;" title="Midnight Rose"></div>
+        <div class="color-swatch" data-color="#0f3d3e" data-accent="#9fd8cb" style="background:#0f3d3e;" title="Deep Teal"></div>
+        <div class="color-swatch" data-color="#2c2416" data-accent="#c9a24b" style="background:#2c2416;" title="Coffee Bean"></div>
+        <div class="color-swatch" data-color="#1e3a5f" data-accent="#f2b880" style="background:#1e3a5f;" title="Ocean Blue"></div>
+        <div class="color-swatch" data-color="#2f1b41" data-accent="#c39bd3" style="background:#2f1b41;" title="Royal Plum"></div>
+        <div class="color-swatch" data-color="#232323" data-accent="#cfcfcf" style="background:#232323;" title="Onyx"></div>
+        <div class="color-swatch" data-color="#3e2723" data-accent="#ff8a65" style="background:#3e2723;" title="Terracotta"></div>
+        <div class="color-swatch" data-color="#1b3b36" data-accent="#f4c95d" style="background:#1b3b36;" title="Pine Gold"></div>
+        <div class="color-swatch" data-color="#4a1c2b" data-accent="#e8a0a0" style="background:#4a1c2b;" title="Wine"></div>
+        <div class="color-swatch" data-color="#26313c" data-accent="#5eb1bf" style="background:#26313c;" title="Slate Teal"></div>
+        <div class="color-swatch" data-color="#efe6d8" data-accent="#3b3222" style="background:#efe6d8;" title="Ivory Espresso"></div>
+        <div class="color-swatch" data-color="#e6ecf0" data-accent="#2b4c6f" style="background:#e6ecf0;" title="Sky Frost"></div>
+        <div class="color-swatch" data-color="#111111" data-accent="#f2c14e" style="background:#111111;" title="Jet Amber"></div>
+      </div>
+      <div class="custom-color-wrap">
+        <label style="margin:0;" data-i18n="label_custom">Kustom:</label>
+        <input type="color" id="custom-color-input" value="#3b3222">
+      </div>
+
+      <label style="margin-top:18px;" data-i18n="label_font">Font CV</label>
+      <div class="font-option-row" id="font-picker"></div>
+    </div>
+
+    <!-- STEP 2: PHOTO -->
+    <div class="wizard-step" data-step="2">
+      <div class="step-kicker" data-i18n="step_photo_kicker">Langkah 3</div>
+      <h2 class="step-question" data-i18n="step_photo_q">Unggah foto (opsional)</h2>
+      <p class="step-help" data-i18n="step_photo_help">Gunakan foto formal 3x4. Foto hanya tersimpan di browser ini dan tidak diunggah ke mana pun. Boleh dilewati.</p>
+      <div class="photo-upload">
+        <div class="photo-preview shape-square" id="photo-preview" data-i18n-html="photo_ph">Photo</div>
+        <div>
+          <input type="file" id="photo-input" accept="image/*" style="display:none">
+          <button class="btn" id="photo-btn" type="button" data-i18n="btn_upload">Unggah foto</button>
+          <div class="hint" id="photo-remove-wrap" style="display:none;margin-top:6px;">
+            <span class="btn-remove" id="photo-remove" data-i18n="btn_remove_photo">Hapus foto</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: PERSONAL INFO -->
+    <div class="wizard-step" data-step="3">
+      <div class="step-kicker" data-i18n="step_personal_kicker">Langkah 4</div>
+      <h2 class="step-question" data-i18n="step_personal_q">Siapa nama Anda, dan posisi apa yang dituju?</h2>
+      <p class="step-help" data-i18n="step_personal_help">Data kontak ini akan tampil di sidebar CV.</p>
+      <label for="f-name" data-i18n="label_name">Nama lengkap</label>
+      <input type="text" id="f-name" placeholder="e.g. Ahmad Fadli">
+      <label for="f-role" data-i18n="label_role">Posisi / target jabatan</label>
+      <input type="text" id="f-role" placeholder="e.g. Mechanical Engineering Graduate">
+      <label for="f-address" data-i18n="label_address">Alamat</label>
+      <input type="text" id="f-address" placeholder="City, Province, Country">
+      <div class="row2">
+        <div><label for="f-phone" data-i18n="label_phone">Telepon</label><input type="tel" id="f-phone" placeholder="+62 812 3456 7890"></div>
+        <div><label for="f-email" data-i18n="label_email">Email</label><input type="email" id="f-email" placeholder="name@email.com"></div>
+      </div>
+      <label for="f-link" data-i18n="label_link">LinkedIn / portofolio (opsional)</label>
+      <input type="text" id="f-link" placeholder="optional">
+    </div>
+
+    <!-- STEP 4: PROFILE SHORT -->
+    <div class="wizard-step" data-step="4">
+      <div class="step-kicker" data-i18n="step_profile_kicker">Langkah 5</div>
+      <h2 class="step-question" data-i18n="step_profile_q">Bagaimana Anda mendeskripsikan diri secara singkat?</h2>
+      <p class="step-help" data-i18n="step_profile_help">2–3 kalimat singkat yang akan tampil di sidebar.</p>
+      <textarea id="f-profile" placeholder="e.g. Fresh graduate of the Mechanical Engineering program at..."></textarea>
+    </div>
+
+    <!-- STEP 5: SUMMARY LONG -->
+    <div class="wizard-step" data-step="5">
+      <div class="step-kicker" data-i18n="step_summary_kicker">Langkah 6</div>
+      <h2 class="step-question" data-i18n="step_summary_q">Tulis ringkasan profesional yang lebih lengkap</h2>
+      <p class="step-help" data-i18n="step_summary_help">Paragraf ini akan tampil di kolom utama CV. Boleh dilewati jika Anda hanya ingin memakai profil singkat.</p>
+      <textarea id="f-summary" placeholder="Highly motivated fresh graduate..."></textarea>
+    </div>
+
+    <!-- STEP 6: COMPETENCIES -->
+    <div class="wizard-step" data-step="6">
+      <div class="step-kicker" data-i18n="step-competencies-kicker">Langkah 7</div>
+      <h2 class="step-question" data-i18n="step_competencies_q">Apa kompetensi utama Anda?</h2>
+      <p class="step-help" data-i18n="step_competencies_help">Tambahkan satu per satu, misalnya keahlian teknis atau kejuruan.</p>
+      <div id="competencies-list"></div>
+      <button class="btn btn-add" type="button" id="add-competency" data-i18n="btn_add_competency">+ Tambah kompetensi</button>
+    </div>
+
+    <!-- STEP 7: LANGUAGES -->
+    <div class="wizard-step" data-step="7">
+      <div class="step-kicker" data-i18n="step_languages_kicker">Langkah 8</div>
+      <h2 class="step-question" data-i18n="step_languages_q">Bahasa apa saja yang Anda kuasai?</h2>
+      <p class="step-help" data-i18n="step_languages_help">Sertakan tingkat kemahiran, misalnya Basic, Intermediate, Fluent.</p>
+      <div id="languages-list"></div>
+      <button class="btn btn-add" type="button" id="add-language" data-i18n="btn_add_language">+ Tambah bahasa</button>
+    </div>
+
+    <!-- STEP 8: CERTIFICATIONS -->
+    <div class="wizard-step" data-step="8">
+      <div class="step-kicker" data-i18n="step_certs_kicker">Langkah 9</div>
+      <h2 class="step-question" data-i18n="step_certs_q">Punya sertifikasi yang ingin ditampilkan?</h2>
+      <p class="step-help" data-i18n="step_certs_help">Sertifikasi singkat akan tampil di sidebar. Boleh dilewati.</p>
+      <div id="certs-list"></div>
+      <button class="btn btn-add" type="button" id="add-cert" data-i18n="btn_add_cert">+ Tambah sertifikasi</button>
+    </div>
+
+    <!-- STEP 9: EDUCATION -->
+    <div class="wizard-step" data-step="9">
+      <div class="step-kicker" data-i18n="step_education_kicker">Langkah 10</div>
+      <h2 class="step-question" data-i18n="step_education_q">Riwayat pendidikan Anda?</h2>
+      <p class="step-help" data-i18n="step_education_help">Tambahkan sekolah/institusi, jurusan, tahun, dan detail singkat jika ada.</p>
+      <div id="education-list"></div>
+      <button class="btn btn-add" type="button" id="add-education" data-i18n="btn_add_education">+ Tambah pendidikan</button>
+    </div>
+
+    <!-- STEP 10: EXPERIENCE -->
+    <div class="wizard-step" data-step="10">
+      <div class="step-kicker" data-i18n="step_experience_kicker">Langkah 11</div>
+      <h2 class="step-question" data-i18n="step_experience_q">Pengalaman magang atau kerja?</h2>
+      <p class="step-help" data-i18n="step_experience_help">Cantumkan tugas atau pencapaian utama pada setiap poin. Boleh dilewati jika belum ada.</p>
+      <div id="experience-list"></div>
+      <button class="btn btn-add" type="button" id="add-experience" data-i18n="btn_add_experience">+ Tambah magang / pekerjaan</button>
+    </div>
+
+    <!-- STEP 11: TRAINING -->
+    <div class="wizard-step" data-step="11">
+      <div class="step-kicker" data-i18n="step_training_kicker">Langkah 12</div>
+      <h2 class="step-question" data-i18n="step_training_q">Pelatihan atau workshop yang pernah diikuti?</h2>
+      <p class="step-help" data-i18n="step_training_help">Boleh dilewati jika tidak ada.</p>
+      <div id="training-list"></div>
+      <button class="btn btn-add" type="button" id="add-training" data-i18n="btn_add_training">+ Tambah pelatihan</button>
+    </div>
+
+    <!-- STEP 12: ORG -->
+    <div class="wizard-step" data-step="12">
+      <div class="step-kicker" data-i18n="step_org_kicker">Langkah 13</div>
+      <h2 class="step-question" data-i18n="step_org_q">Pengalaman organisasi?</h2>
+      <p class="step-help" data-i18n="step_org_help">Boleh dilewati jika tidak ada.</p>
+      <div id="org-list"></div>
+      <button class="btn btn-add" type="button" id="add-org" data-i18n="btn_add_org">+ Tambah kegiatan</button>
+    </div>
+
+    <!-- STEP 13: ADDITIONAL SKILLS -->
+    <div class="wizard-step" data-step="13">
+      <div class="step-kicker" data-i18n="step_addskill_kicker">Langkah 14</div>
+      <h2 class="step-question" data-i18n="step_addskill_q">Ada keterampilan tambahan lainnya?</h2>
+      <p class="step-help" data-i18n="step_addskill_help">Misalnya software, alat, atau soft skill. Akan tampil di kolom utama.</p>
+      <div id="addskills-list"></div>
+      <button class="btn btn-add" type="button" id="add-addskill" data-i18n="btn_add_skill">+ Tambah keterampilan</button>
+    </div>
+
+    <!-- STEP 14: REVIEW -->
+    <div class="wizard-step" data-step="14">
+      <div class="step-kicker" data-i18n="step_review_kicker">Langkah 15</div>
+      <h2 class="step-question" data-i18n="step_review_q">Selesai! Periksa kembali CV Anda</h2>
+      <p class="step-help" data-i18n="step_review_help">Klik bagian mana pun untuk kembali dan mengedit. Jika sudah sesuai, unduh sebagai PDF.</p>
+      <ul class="review-list" id="review-list"></ul>
+      <p class="hint" style="margin-top:16px;" data-i18n="print_hint">Saat mencetak, buka "More settings" lalu centang "Background graphics" agar warna sidebar ikut tercetak.</p>
+      <button class="btn btn-primary" id="download-btn-step" type="button" style="margin-top:14px;width:100%;padding:12px;" data-i18n="btn_download">⬇ Unduh PDF</button>
+      <button class="btn" id="clear-all-btn" type="button" style="margin-top:8px;width:100%;" data-i18n="btn_clear">Mulai ulang / hapus semua</button>
+    </div>
+
+    <!-- NAV -->
+    <div class="wizard-nav">
+      <button class="btn" id="btn-back" type="button" data-i18n="btn_back">← Kembali</button>
+      <button class="skip-link" id="btn-skip" type="button" data-i18n="btn_skip">Lewati langkah ini</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="btn-next" type="button" data-i18n="btn_next">Lanjut →</button>
+    </div>
+  </div>
+
+  <!-- ============ PREVIEW SIDE ============ -->
+  <div class="preview-side">
+    <div class="preview-toolbar">
+      <button class="btn btn-primary" id="download-btn" type="button" data-i18n="btn_download">⬇ Unduh PDF</button>
+    </div>
+
+    <div class="cv-scale-wrap" id="cv-scale-wrap">
+    <div class="cv-container" id="cv-page">
+      <div class="sidebar">
+        <div class="photo-box shape-square" id="p-photo-box"><span data-i18n="photo_ph_short">Foto</span></div>
+        <h1 id="p-name" class="placeholder">[Full Name]</h1>
+        <div class="role" id="p-role">Target Role</div>
+
+        <div class="contact-block">
+          <h2 class="h2-contact" data-i18n="h_contact">Kontak</h2>
+          <div class="contact-item">📍 <span id="p-address" class="placeholder">[Address]</span></div>
+          <div class="contact-item">📞 <span id="p-phone" class="placeholder">[Phone number]</span></div>
+          <div class="contact-item">✉️ <span id="p-email" class="placeholder">[Email address]</span></div>
+          <div class="contact-item" id="p-link-wrap" style="display:none;">🔗 <span id="p-link"></span></div>
+        </div>
+
+        <div class="profile-block">
+          <h2 class="h2-profile" data-i18n="h_profile">Profil</h2>
+          <p id="p-profile">—</p>
+        </div>
+
+        <div class="skills-block">
+          <h2 class="h2-skills" data-i18n="h_competencies">Kompetensi Utama</h2>
+          <ul id="p-competencies"></ul>
+        </div>
+
+        <div class="lang-block">
+          <h2 class="h2-lang" data-i18n="h_languages">Bahasa</h2>
+          <ul id="p-languages"></ul>
+        </div>
+
+        <div class="cert-block">
+          <h2 id="s-cert-head" style="display:none;" data-i18n="h_certs">Sertifikasi</h2>
+          <ul id="p-certs"></ul>
+        </div>
+      </div>
+
+      <div class="main">
+        <section id="s-summary" style="display:none;">
+          <h2 data-i18n="h_summary">Ringkasan Profesional</h2>
+          <p class="summary" id="p-summary"></p>
+        </section>
+
+        <section id="s-education" style="display:none;">
+          <h2 data-i18n="h_education">Pendidikan</h2>
+          <div id="p-education"></div>
+        </section>
+
+        <section id="s-experience" style="display:none;">
+          <h2 data-i18n="h_experience">Pengalaman Magang / Kerja</h2>
+          <div id="p-experience"></div>
+        </section>
+
+        <section id="s-training" style="display:none;">
+          <h2 data-i18n="h_training">Pelatihan & Workshop</h2>
+          <ul id="p-training"></ul>
+        </section>
+
+        <section id="s-org" style="display:none;">
+          <h2 data-i18n="h_org">Pengalaman Organisasi</h2>
+          <ul id="p-org"></ul>
+        </section>
+
+        <section id="s-addskill" style="display:none;">
+          <h2 data-i18n="h_addskill">Keterampilan Tambahan</h2>
+          <ul class="skills-grid" id="p-addskills"></ul>
+        </section>
+      </div>
+    </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const state = { photo:null, competencies:[], languages:[], certs:[], education:[], experience:[], training:[], org:[], addskills:[],
+    template:'classic', photoShape:'square', sidebarColor:'#3b3222', sidebarAccent:'#d3a75c', cvLang:'id', currentStep:0,
+    cvFont:"'Georgia','Times New Roman',serif" };
+  const TOTAL_STEPS = 15;
+  function uid(){ return 'id' + Math.random().toString(36).slice(2,9); }
+  function esc(s){ return (s||'').toString(); }
+
+  // ---------------- i18n ----------------
+  const I18N = {
+    id: {
+      app_title:'Panduan Langkah demi Langkah',
+      app_subtitle:'Jawab pertanyaan satu per satu. Tampilan CV di kanan akan otomatis diperbarui setiap kali Anda mengisi.',
+      step_design_kicker:'Langkah 2', step_design_q:'Pilih tampilan CV Anda', step_design_help:'Pilih model tata letak, bentuk foto, dan warna sidebar. Semua bisa diubah lagi kapan saja.',
+      label_template:'Model CV', label_shape:'Bentuk foto', label_color:'Warna sidebar', label_custom:'Kustom:', label_font:'Font CV',
+      step_photo_kicker:'Langkah 3', step_photo_q:'Unggah foto (opsional)', step_photo_help:'Gunakan foto formal 3x4. Foto hanya tersimpan di browser ini dan tidak diunggah ke mana pun. Boleh dilewati.',
+      btn_upload:'Unggah foto', btn_remove_photo:'Hapus foto', photo_ph:'Foto', photo_ph_short:'Foto',
+      step_personal_kicker:'Langkah 4', step_personal_q:'Siapa nama Anda, dan posisi apa yang dituju?', step_personal_help:'Data kontak ini akan tampil di sidebar CV.',
+      label_name:'Nama lengkap', label_role:'Posisi / target jabatan', label_address:'Alamat', label_phone:'Telepon', label_email:'Email', label_link:'LinkedIn / portofolio (opsional)',
+      step_profile_kicker:'Langkah 5', step_profile_q:'Bagaimana Anda mendeskripsikan diri secara singkat?', step_profile_help:'2–3 kalimat singkat yang akan tampil di sidebar.',
+      step_summary_kicker:'Langkah 6', step_summary_q:'Tulis ringkasan profesional yang lebih lengkap', step_summary_help:'Paragraf ini akan tampil di kolom utama CV. Boleh dilewati jika Anda hanya ingin memakai profil singkat.',
+      'step-competencies-kicker':'Langkah 7', step_competencies_q:'Apa kompetensi utama Anda?', step_competencies_help:'Tambahkan satu per satu, misalnya keahlian teknis atau kejuruan.', btn_add_competency:'+ Tambah kompetensi',
+      step_languages_kicker:'Langkah 8', step_languages_q:'Bahasa apa saja yang Anda kuasai?', step_languages_help:'Sertakan tingkat kemahiran, misalnya Basic, Intermediate, Fluent.', btn_add_language:'+ Tambah bahasa',
+      step_certs_kicker:'Langkah 9', step_certs_q:'Punya sertifikasi yang ingin ditampilkan?', step_certs_help:'Sertifikasi singkat akan tampil di sidebar. Boleh dilewati.', btn_add_cert:'+ Tambah sertifikasi',
+      step_education_kicker:'Langkah 10', step_education_q:'Riwayat pendidikan Anda?', step_education_help:'Tambahkan sekolah/institusi, jurusan, tahun, dan detail singkat jika ada.', btn_add_education:'+ Tambah pendidikan',
+      step_experience_kicker:'Langkah 11', step_experience_q:'Pengalaman magang atau kerja?', step_experience_help:'Cantumkan tugas atau pencapaian utama pada setiap poin. Boleh dilewati jika belum ada.', btn_add_experience:'+ Tambah magang / pekerjaan',
+      step_training_kicker:'Langkah 12', step_training_q:'Pelatihan atau workshop yang pernah diikuti?', step_training_help:'Boleh dilewati jika tidak ada.', btn_add_training:'+ Tambah pelatihan',
+      step_org_kicker:'Langkah 13', step_org_q:'Pengalaman organisasi?', step_org_help:'Boleh dilewati jika tidak ada.', btn_add_org:'+ Tambah kegiatan',
+      step_addskill_kicker:'Langkah 14', step_addskill_q:'Ada keterampilan tambahan lainnya?', step_addskill_help:'Misalnya software, alat, atau soft skill. Akan tampil di kolom utama.', btn_add_skill:'+ Tambah keterampilan',
+      step_review_kicker:'Langkah 15', step_review_q:'Selesai! Periksa kembali CV Anda', step_review_help:'Klik bagian mana pun untuk kembali dan mengedit. Jika sudah sesuai, unduh sebagai PDF.',
+      print_hint:'Saat mencetak, buka "More settings" lalu centang "Background graphics" agar warna sidebar ikut tercetak.',
+      btn_download:'⬇ Unduh PDF', btn_clear:'Mulai ulang / hapus semua', btn_back:'← Kembali', btn_skip:'Lewati langkah ini', btn_next:'Lanjut →', btn_finish:'Selesai ✓',
+      h_contact:'Kontak', h_profile:'Profil', h_competencies:'Kompetensi Utama', h_languages:'Bahasa', h_certs:'Sertifikasi',
+      h_summary:'Ringkasan Profesional', h_education:'Pendidikan', h_experience:'Pengalaman Magang / Kerja', h_training:'Pelatihan & Workshop',
+      h_org:'Pengalaman Organisasi', h_addskill:'Keterampilan Tambahan',
+      progress_step:'Langkah', progress_of:'dari',
+      review_edit:'Edit', review_filled:'Terisi', review_empty:'Kosong',
+      review_names:['Bahasa CV','Tampilan & warna','Foto','Informasi pribadi','Profil singkat','Ringkasan profesional','Kompetensi utama','Bahasa yang dikuasai','Sertifikasi','Pendidikan','Pengalaman kerja/magang','Pelatihan & workshop','Pengalaman organisasi','Keterampilan tambahan'],
+      level_select_ph:'Pilih tingkat', level_basic:'Dasar', level_elementary:'Pemula', level_intermediate:'Menengah', level_upper_intermediate:'Menengah Atas', level_advanced:'Mahir', level_fluent:'Fasih', level_native:'Bahasa Ibu'
+    },
+    en: {
+      app_title:'Step-by-Step Wizard',
+      app_subtitle:'Answer the questions one at a time. The CV preview on the right updates automatically as you go.',
+      step_design_kicker:'Step 2', step_design_q:'Choose the look of your CV', step_design_help:'Pick a layout, photo shape, and sidebar color. You can always change these later.',
+      label_template:'CV template', label_shape:'Photo shape', label_color:'Sidebar color', label_custom:'Custom:', label_font:'CV font',
+      step_photo_kicker:'Step 3', step_photo_q:'Upload a photo (optional)', step_photo_help:'Use a formal 3x4 photo. It is only stored in this browser tab and never uploaded anywhere. You may skip this step.',
+      btn_upload:'Upload photo', btn_remove_photo:'Remove photo', photo_ph:'Photo', photo_ph_short:'Photo',
+      step_personal_kicker:'Step 4', step_personal_q:'What is your name, and what role are you targeting?', step_personal_help:'This contact information will appear in the CV sidebar.',
+      label_name:'Full name', label_role:'Title / target role', label_address:'Address', label_phone:'Phone', label_email:'Email', label_link:'LinkedIn / portfolio (optional)',
+      step_profile_kicker:'Step 5', step_profile_q:'How would you describe yourself briefly?', step_profile_help:'2–3 short sentences that will appear in the sidebar.',
+      step_summary_kicker:'Step 6', step_summary_q:'Write a longer professional summary', step_summary_help:'This paragraph appears in the main column. Skip it if you only want the short profile.',
+      'step-competencies-kicker':'Step 7', step_competencies_q:'What are your core competencies?', step_competencies_help:'Add them one at a time — technical or vocational skills work well here.', btn_add_competency:'+ Add competency',
+      step_languages_kicker:'Step 8', step_languages_q:'Which languages do you speak?', step_languages_help:'Include a proficiency level, e.g. Basic, Intermediate, Fluent.', btn_add_language:'+ Add language',
+      step_certs_kicker:'Step 9', step_certs_q:'Any certifications to show?', step_certs_help:'Short certifications appear in the sidebar. You may skip this step.', btn_add_cert:'+ Add certification',
+      step_education_kicker:'Step 10', step_education_q:'What is your education history?', step_education_help:'Add school/institution, major, years, and short details if any.', btn_add_education:'+ Add education',
+      step_experience_kicker:'Step 11', step_experience_q:'Any internship or work experience?', step_experience_help:'List key tasks or achievements as bullet points. Skip if you have none yet.', btn_add_experience:'+ Add internship / job',
+      step_training_kicker:'Step 12', step_training_q:'Any training or workshops you have attended?', step_training_help:'You may skip this step if none.', btn_add_training:'+ Add training',
+      step_org_kicker:'Step 13', step_org_q:'Any organizational experience?', step_org_help:'You may skip this step if none.', btn_add_org:'+ Add activity',
+      step_addskill_kicker:'Step 14', step_addskill_q:'Any other additional skills?', step_addskill_help:'E.g. software, tools, or soft skills. Appears in the main column.', btn_add_skill:'+ Add skill',
+      step_review_kicker:'Step 15', step_review_q:'All done! Review your CV', step_review_help:'Click any item to jump back and edit it. When it looks right, download it as a PDF.',
+      print_hint:'When printing, open "More settings" and check "Background graphics" so the sidebar color prints too.',
+      btn_download:'⬇ Download PDF', btn_clear:'Start over / clear all', btn_back:'← Back', btn_skip:'Skip this step', btn_next:'Next →', btn_finish:'Finish ✓',
+      h_contact:'Contact', h_profile:'Profile', h_competencies:'Core Competencies', h_languages:'Languages', h_certs:'Certifications',
+      h_summary:'Professional Summary', h_education:'Education', h_experience:'Internship / Work Experience', h_training:'Training & Workshops',
+      h_org:'Organizational Experience', h_addskill:'Additional Skills',
+      progress_step:'Step', progress_of:'of',
+      review_edit:'Edit', review_filled:'Filled', review_empty:'Empty',
+      review_names:['CV language','Look & color','Photo','Personal information','Short profile','Professional summary','Core competencies','Languages','Certifications','Education','Work/internship experience','Training & workshops','Organizational experience','Additional skills'],
+      level_select_ph:'Select level', level_basic:'Basic', level_elementary:'Elementary', level_intermediate:'Intermediate', level_upper_intermediate:'Upper Intermediate', level_advanced:'Advanced', level_fluent:'Fluent', level_native:'Native'
+    }
+  };
+  function t(key){ return (I18N[state.cvLang] && I18N[state.cvLang][key]) || I18N.id[key] || key; }
+  function applyLanguage(){
+    document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+    document.getElementById('app-title').textContent = t('app_title');
+    document.getElementById('app-subtitle').textContent = t('app_subtitle');
+    document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active', o.dataset.lang===state.cvLang));
+    updateProgress();
+    renderReview();
+    if(typeof renderLanguagesList === 'function'){ renderLanguagesList(); }
+    render();
+  }
+
+  document.querySelectorAll('.lang-option').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      state.cvLang = opt.dataset.lang;
+      applyLanguage();
+    });
+  });
+
+  // ---------------- design options ----------------
+  const FONTS = [
+    {name:'Georgia', stack:"'Georgia','Times New Roman',serif"},
+    {name:'Times New Roman', stack:"'Times New Roman',Times,serif"},
+    {name:'Playfair Display', stack:"'Playfair Display',Georgia,serif"},
+    {name:'Merriweather', stack:"'Merriweather',Georgia,serif"},
+    {name:'Lora', stack:"'Lora',Georgia,serif"},
+    {name:'EB Garamond', stack:"'EB Garamond',Garamond,serif"},
+    {name:'Libre Baskerville', stack:"'Libre Baskerville',Georgia,serif"},
+    {name:'PT Serif', stack:"'PT Serif',Georgia,serif"},
+    {name:'Crimson Text', stack:"'Crimson Text',Georgia,serif"},
+    {name:'Cormorant Garamond', stack:"'Cormorant Garamond',Georgia,serif"},
+    {name:'Source Serif 4', stack:"'Source Serif 4',Georgia,serif"},
+    {name:'DM Serif Display', stack:"'DM Serif Display',Georgia,serif"},
+    {name:'Bitter', stack:"'Bitter',Georgia,serif"},
+    {name:'IBM Plex Serif', stack:"'IBM Plex Serif',Georgia,serif"},
+    {name:'Inter', stack:"'Inter',Arial,sans-serif"},
+    {name:'Poppins', stack:"'Poppins',Arial,sans-serif"},
+    {name:'Montserrat', stack:"'Montserrat',Arial,sans-serif"},
+    {name:'Roboto', stack:"'Roboto',Arial,sans-serif"},
+    {name:'Open Sans', stack:"'Open Sans',Arial,sans-serif"},
+    {name:'Lato', stack:"'Lato',Arial,sans-serif"},
+    {name:'Raleway', stack:"'Raleway',Arial,sans-serif"},
+    {name:'Nunito', stack:"'Nunito',Arial,sans-serif"},
+    {name:'Work Sans', stack:"'Work Sans',Arial,sans-serif"},
+    {name:'Karla', stack:"'Karla',Arial,sans-serif"},
+    {name:'Rubik', stack:"'Rubik',Arial,sans-serif"},
+    {name:'Josefin Sans', stack:"'Josefin Sans',Arial,sans-serif"},
+    {name:'Fira Sans', stack:"'Fira Sans',Arial,sans-serif"},
+    {name:'Space Grotesk', stack:"'Space Grotesk',Arial,sans-serif"},
+    {name:'IBM Plex Sans', stack:"'IBM Plex Sans',Arial,sans-serif"},
+    {name:'Arial', stack:"Arial,Helvetica,sans-serif"},
+    {name:'Verdana', stack:"Verdana,Geneva,sans-serif"},
+    {name:'Tahoma', stack:"Tahoma,Geneva,sans-serif"},
+    {name:'Trebuchet MS', stack:"'Trebuchet MS',Helvetica,sans-serif"},
+    {name:'Courier New', stack:"'Courier New',Courier,monospace"}
+  ];
+  const fontPickerWrap = document.getElementById('font-picker');
+  FONTS.forEach((f,idx)=>{
+    const opt = document.createElement('div');
+    opt.className = 'font-option' + (idx===0 ? ' active' : '');
+    opt.dataset.stack = f.stack;
+    opt.innerHTML = '<div class="font-preview" style="font-family:'+f.stack+';">'+f.name+'</div><div class="font-label">'+f.name+'</div>';
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('.font-option').forEach(o=>o.classList.remove('active'));
+      opt.classList.add('active');
+      state.cvFont = f.stack;
+      applyDesign();
+    });
+    fontPickerWrap.appendChild(opt);
+  });
+
+  const cvPage = document.getElementById('cv-page');
+  function applyDesign(){
+    cvPage.className = 'cv-container template-' + state.template;
+    cvPage.style.setProperty('--sidebar-bg', state.sidebarColor);
+    cvPage.style.setProperty('--accent', state.sidebarAccent);
+    cvPage.style.setProperty('--cv-font', state.cvFont);
+    const light = isLight(state.sidebarColor);
+    cvPage.style.setProperty('--sidebar-text', light ? '#2b2321' : '#f2f0e6');
+    cvPage.style.setProperty('--sidebar-border', light ? 'rgba(43,35,33,0.2)' : 'rgba(242,240,230,0.25)');
+    cvPage.style.setProperty('--sidebar-border-strong', light ? 'rgba(43,35,33,0.3)' : 'rgba(242,240,230,0.4)');
+    cvPage.style.setProperty('--sidebar-placeholder', light ? state.sidebarAccent : '#e0cfa0');
+
+    document.getElementById('p-photo-box').className = 'photo-box';
+    applyShapeToEl(document.getElementById('p-photo-box'), currentShape(), true);
+    document.getElementById('photo-preview').className = 'photo-preview';
+    applyShapeToEl(document.getElementById('photo-preview'), currentShape(), false);
+    render();
+  }
+  function isLight(hex){
+    const c = hex.replace('#','');
+    const r = parseInt(c.substring(0,2),16), g = parseInt(c.substring(2,4),16), b = parseInt(c.substring(4,6),16);
+    return (0.299*r + 0.587*g + 0.114*b) > 170;
+  }
+
+  document.querySelectorAll('#template-picker .template-option').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#template-picker .template-option').forEach(o=>o.classList.remove('active'));
+      opt.classList.add('active');
+      state.template = opt.dataset.template;
+      applyDesign();
+    });
+  });
+
+  // ---- photo frame shapes (many options via border-radius / clip-path) ----
+  const SHAPES = [
+    {key:'square', label:'Square', ratio:'portrait', radius:'4px', clip:''},
+    {key:'rounded', label:'Rounded', ratio:'portrait', radius:'20px', clip:''},
+    {key:'squircle', label:'Squircle', ratio:'portrait', radius:'46px', clip:''},
+    {key:'circle', label:'Circle', ratio:'square', radius:'50%', clip:''},
+    {key:'arch', label:'Arch', ratio:'portrait', radius:'70px 70px 0 0', clip:''},
+    {key:'leaf', label:'Leaf', ratio:'portrait', radius:'0 50% 50% 50%', clip:''},
+    {key:'blob', label:'Blob', ratio:'square', radius:'62% 38% 30% 70% / 58% 32% 68% 42%', clip:''},
+    {key:'diamond', label:'Diamond', ratio:'square', radius:'0', clip:'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'},
+    {key:'hexagon', label:'Hexagon', ratio:'square', radius:'0', clip:'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)'},
+    {key:'octagon', label:'Octagon', ratio:'square', radius:'0', clip:'polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%)'},
+    {key:'pentagon', label:'Pentagon', ratio:'square', radius:'0', clip:'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)'},
+    {key:'shield', label:'Shield', ratio:'square', radius:'0', clip:'polygon(50% 0%, 100% 20%, 100% 60%, 50% 100%, 0% 60%, 0% 20%)'},
+    {key:'star', label:'Star', ratio:'square', radius:'0', clip:'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)'},
+    {key:'parallelogram', label:'Parallelogram', ratio:'portrait', radius:'0', clip:'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)'}
+  ];
+  const shapePickerWrap = document.getElementById('shape-picker');
+  function applyShapeToEl(el, shape, big){
+    const portraitW = big ? '140px' : '66px', portraitH = big ? '170px' : '80px';
+    const squareW = big ? '150px' : '80px', squareH = squareW;
+    if(shape.ratio==='square'){ el.style.width = squareW; el.style.height = squareH; }
+    else { el.style.width = portraitW; el.style.height = portraitH; }
+    el.style.borderRadius = shape.radius || '0';
+    el.style.clipPath = shape.clip || 'none';
+  }
+  SHAPES.forEach((sh,idx)=>{
+    const opt = document.createElement('div');
+    opt.className = 'shape-option' + (idx===0 ? ' active' : '');
+    opt.dataset.shape = sh.key;
+    const swatch = document.createElement('div');
+    swatch.className = 'shape-swatch';
+    swatch.style.borderRadius = sh.radius || '0';
+    swatch.style.clipPath = sh.clip || 'none';
+    const label = document.createElement('span'); label.textContent = sh.label;
+    opt.appendChild(swatch); opt.appendChild(label);
+    opt.addEventListener('click', ()=>{
+      document.querySelectorAll('#shape-picker .shape-option').forEach(o=>o.classList.remove('active'));
+      opt.classList.add('active');
+      state.photoShape = sh.key;
+      applyDesign();
+    });
+    shapePickerWrap.appendChild(opt);
+  });
+  function currentShape(){ return SHAPES.find(s=>s.key===state.photoShape) || SHAPES[0]; }
+
+  document.querySelectorAll('#color-picker .color-swatch').forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
+      sw.classList.add('active');
+      state.sidebarColor = sw.dataset.color;
+      state.sidebarAccent = sw.dataset.accent;
+      document.getElementById('custom-color-input').value = sw.dataset.color;
+      applyDesign();
+    });
+  });
+  document.getElementById('custom-color-input').addEventListener('input', (e)=>{
+    document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
+    state.sidebarColor = e.target.value;
+    state.sidebarAccent = isLight(e.target.value) ? '#8a6d22' : '#d3a75c';
+    applyDesign();
+  });
+
+  // ---------------- photo ----------------
+  const photoInput = document.getElementById('photo-input');
+  document.getElementById('photo-btn').addEventListener('click', ()=>photoInput.click());
+  photoInput.addEventListener('change', (e)=>{
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      state.photo = ev.target.result;
+      document.getElementById('photo-preview').innerHTML = '<img src="'+state.photo+'">';
+      document.getElementById('photo-remove-wrap').style.display = 'block';
+      render(); renderReview();
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('photo-remove').addEventListener('click', ()=>{
+    state.photo = null; photoInput.value='';
+    document.getElementById('photo-preview').innerHTML = t('photo_ph');
+    document.getElementById('photo-remove-wrap').style.display = 'none';
+    render(); renderReview();
+  });
+
+  // ---------------- simple fields ----------------
+  ['f-name','f-role','f-address','f-phone','f-email','f-link','f-profile','f-summary'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', ()=>{ render(); renderReview(); });
+  });
+
+  // ---------------- repeatable lists ----------------
+  function makeRepeatable(containerId, addBtnId, arr, fieldsDef, cardLabelKey){
+    function addItem(){ const item={_id:uid()}; fieldsDef.forEach(f=>item[f.key]=''); arr.push(item); renderList(); render(); renderReview(); }
+    function renderList(){
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      arr.forEach((item, idx)=>{
+        const card = document.createElement('div'); card.className='item-card';
+        let html = '<div class="item-card-head"><span class="item-card-label">'+cardLabelKey+' '+(idx+1)+'</span><span class="btn-remove" data-idx="'+idx+'">'+ (state.cvLang==='en'?'Remove':'Hapus') +'</span></div>';
+        fieldsDef.forEach(f=>{
+          if(f.row){
+            html += '<div class="row2">';
+            f.row.forEach(rf=>{ html += fieldHtml(rf,item,idx); });
+            html += '</div>';
+          } else { html += fieldHtml(f,item,idx); }
+        });
+        card.innerHTML = html; container.appendChild(card);
+      });
+      container.querySelectorAll('.btn-remove').forEach(btn=>{
+        btn.addEventListener('click', ()=>{ arr.splice(+btn.dataset.idx,1); renderList(); render(); renderReview(); });
+      });
+      container.querySelectorAll('[data-field]').forEach(inp=>{
+        inp.addEventListener('input', ()=>{ arr[+inp.dataset.idx][inp.dataset.field]=inp.value; render(); renderReview(); });
+        inp.addEventListener('change', ()=>{ arr[+inp.dataset.idx][inp.dataset.field]=inp.value; render(); renderReview(); });
+      });
+    }
+    function fieldHtml(f,item,idx){
+      const val = (item[f.key]||'').replace(/"/g,'&quot;');
+      if(f.type==='textarea'){
+        return '<div style="grid-column:1/-1;"><label>'+f.label+'</label><textarea data-field="'+f.key+'" data-idx="'+idx+'" placeholder="'+(f.ph||'')+'">'+(item[f.key]||'')+'</textarea></div>';
+      }
+      if(f.type==='select'){
+        const optList = f.optionsI18n ? f.optionsI18n.map(k=>({value:k, label:t(k)})) : (f.options||[]).map(o=>({value:o, label:o}));
+        const opts = optList.map(o=>{
+          const sel = (item[f.key]||'')===o.value ? ' selected' : '';
+          return '<option value="'+o.value.replace(/"/g,'&quot;')+'"'+sel+'>'+o.label+'</option>';
+        }).join('');
+        const phText = f.phI18n ? t(f.phI18n) : (f.ph||'');
+        const placeholderOpt = '<option value="" disabled'+(item[f.key]?'':' selected')+' hidden>'+phText+'</option>';
+        return '<div><label>'+f.label+'</label><select data-field="'+f.key+'" data-idx="'+idx+'">'+placeholderOpt+opts+'</select></div>';
+      }
+      return '<div><label>'+f.label+'</label><input type="text" data-field="'+f.key+'" data-idx="'+idx+'" value="'+val+'" placeholder="'+(f.ph||'')+'"></div>';
+    }
+    document.getElementById(addBtnId).addEventListener('click', addItem);
+    renderList();
+    return renderList;
+  }
+
+  makeRepeatable('competencies-list','add-competency', state.competencies, [
+    {key:'name', label:'Competency', ph:'e.g. CNC machine operation'}
+  ], 'Competency');
+
+  const renderLanguagesList = makeRepeatable('languages-list','add-language', state.languages, [
+    {row:[{key:'name',label:'Language',ph:'e.g. English'},{key:'level',label:'Proficiency',type:'select',phI18n:'level_select_ph', optionsI18n:['level_basic','level_elementary','level_intermediate','level_upper_intermediate','level_advanced','level_fluent','level_native']}]}
+  ], 'Language');
+
+  makeRepeatable('certs-list','add-cert', state.certs, [
+    {key:'name', label:'Certification', ph:'e.g. CNC Operator Certificate'}
+  ], 'Certification');
+
+  makeRepeatable('education-list','add-education', state.education, [
+    {row:[{key:'school',label:'School / institution',ph:'e.g. SMK Negeri 6 Samarinda'},{key:'major',label:'Major / program',ph:'e.g. Mechanical Engineering'}]},
+    {row:[{key:'start',label:'Start year',ph:'e.g. 2023'},{key:'end',label:'End year',ph:'e.g. 2026'}]},
+    {key:'desc', label:'Details (one point per line)', type:'textarea', ph:'Studied core subjects...\nGained hands-on experience...'}
+  ], 'Education');
+
+  makeRepeatable('experience-list','add-experience', state.experience, [
+    {row:[{key:'company',label:'Company / institution',ph:'e.g. PT Example Manufacturing'},{key:'position',label:'Position / division',ph:'e.g. Production Intern'}]},
+    {row:[{key:'start',label:'Start date',ph:'e.g. Jan 2025'},{key:'end',label:'End date',ph:'e.g. Mar 2025'}]},
+    {key:'desc', label:'Tasks / achievements (one point per line)', type:'textarea', ph:'Operated lathe/CNC machines...\nUsed tools/software...'}
+  ], 'Position');
+
+  makeRepeatable('training-list','add-training', state.training, [
+    {key:'name', label:'Training / workshop', ph:'e.g. Workshop Safety (K3) Training, 2025'}
+  ], 'Training');
+
+  makeRepeatable('org-list','add-org', state.org, [
+    {key:'name', label:'Activity', ph:'e.g. Member of OSIS, 2024'}
+  ], 'Activity');
+
+  makeRepeatable('addskills-list','add-addskill', state.addskills, [
+    {key:'name', label:'Skill', ph:'e.g. Microsoft Excel'}
+  ], 'Skill');
+
+  // ---------------- render preview ----------------
+  function render(){
+    const name = document.getElementById('f-name').value.trim();
+    const nameEl = document.getElementById('p-name');
+    nameEl.textContent = name || '[Full Name]';
+    nameEl.className = name ? '' : 'placeholder';
+
+    document.getElementById('p-role').textContent = document.getElementById('f-role').value.trim() || (state.cvLang==='en' ? 'Target Role' : 'Target Jabatan');
+
+    setField('p-address', document.getElementById('f-address').value.trim(), '[Address]');
+    setField('p-phone', document.getElementById('f-phone').value.trim(), '[Phone number]');
+    setField('p-email', document.getElementById('f-email').value.trim(), '[Email address]');
+    const link = document.getElementById('f-link').value.trim();
+    document.getElementById('p-link-wrap').style.display = link ? 'flex' : 'none';
+    document.getElementById('p-link').textContent = link;
+
+    const profile = document.getElementById('f-profile').value.trim();
+    document.getElementById('p-profile').textContent = profile || '—';
+
+    const box = document.getElementById('p-photo-box');
+    box.innerHTML = state.photo ? '<img src="'+state.photo+'">' : '<span>'+t('photo_ph_short')+'</span>';
+
+    document.getElementById('p-competencies').innerHTML = state.competencies.filter(x=>x.name).map(x=>'<li>'+esc(x.name)+'</li>').join('') || '<li class="placeholder">—</li>';
+    document.getElementById('p-languages').innerHTML = state.languages.filter(x=>x.name).map(x=>'<li>'+esc(x.name)+(x.level?' — '+esc(t(x.level)):'')+'</li>').join('') || '<li class="placeholder">—</li>';
+    const validCert = state.certs.filter(x=>x.name);
+    document.getElementById('s-cert-head').style.display = validCert.length ? 'block' : 'none';
+    document.getElementById('p-certs').innerHTML = validCert.map(x=>'<li>'+esc(x.name)+'</li>').join('');
+
+    const summary = document.getElementById('f-summary').value.trim();
+    document.getElementById('s-summary').style.display = summary ? 'block' : 'none';
+    document.getElementById('p-summary').textContent = summary;
+
+    const validEdu = state.education.filter(x=>x.school || x.major);
+    document.getElementById('s-education').style.display = validEdu.length ? 'block' : 'none';
+    document.getElementById('p-education').innerHTML = validEdu.map(x=>`
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">${esc(x.school)||'School / Institution'}</span>
+          <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
+        </div>
+        ${x.major?'<div class="entry-subtitle">'+esc(x.major)+'</div>':''}
+        ${x.desc ? '<ul>'+x.desc.split('\n').filter(Boolean).map(l=>'<li>'+esc(l)+'</li>').join('')+'</ul>' : ''}
+      </div>`).join('');
+
+    const validExp = state.experience.filter(x=>x.company || x.position);
+    document.getElementById('s-experience').style.display = validExp.length ? 'block' : 'none';
+    document.getElementById('p-experience').innerHTML = validExp.map(x=>`
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">${esc(x.company)||'Company / Institution'}</span>
+          <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
+        </div>
+        ${x.position?'<div class="entry-subtitle">'+esc(x.position)+'</div>':''}
+        ${x.desc ? '<ul>'+x.desc.split('\n').filter(Boolean).map(l=>'<li>'+esc(l)+'</li>').join('')+'</ul>' : ''}
+      </div>`).join('');
+
+    const validTrain = state.training.filter(x=>x.name);
+    document.getElementById('s-training').style.display = validTrain.length ? 'block' : 'none';
+    document.getElementById('p-training').innerHTML = validTrain.map(x=>'<li>'+esc(x.name)+'</li>').join('');
+
+    const validOrg = state.org.filter(x=>x.name);
+    document.getElementById('s-org').style.display = validOrg.length ? 'block' : 'none';
+    document.getElementById('p-org').innerHTML = validOrg.map(x=>'<li>'+esc(x.name)+'</li>').join('');
+
+    document.getElementById('s-addskill').style.display = state.addskills.filter(x=>x.name).length ? 'block' : 'none';
+    document.getElementById('p-addskills').innerHTML = state.addskills.filter(x=>x.name).map(x=>'<li>'+esc(x.name)+'</li>').join('');
+  }
+  function setField(id, val, ph){
+    const el = document.getElementById(id);
+    el.textContent = val || ph;
+    el.className = val ? '' : 'placeholder';
+  }
+
+  document.getElementById('download-btn').addEventListener('click', ()=>window.print());
+  document.getElementById('download-btn-step').addEventListener('click', ()=>window.print());
+  document.getElementById('clear-all-btn').addEventListener('click', ()=>{
+    const msg = state.cvLang==='en' ? 'Clear everything and start over?' : 'Hapus semua dan mulai dari awal?';
+    if(!confirm(msg)) return;
+    document.querySelectorAll('input[type=text],input[type=email],input[type=tel],textarea').forEach(el=>el.value='');
+    state.photo=null;
+    [state.competencies, state.languages, state.certs, state.education, state.experience, state.training, state.org, state.addskills].forEach(a=>a.length=0);
+    document.getElementById('photo-preview').innerHTML = t('photo_ph');
+    document.getElementById('photo-remove-wrap').style.display='none';
+    ['competencies-list','languages-list','certs-list','education-list','experience-list','training-list','org-list','addskills-list'].forEach(id=>document.getElementById(id).innerHTML='');
+    goToStep(0);
+    render(); renderReview();
+  });
+
+  // ---------------- wizard navigation ----------------
+  const steps = Array.from(document.querySelectorAll('.wizard-step'));
+  const dotsWrap = document.getElementById('wizard-dots');
+  steps.forEach((s,i)=>{
+    const dot = document.createElement('div');
+    dot.className = 'wizard-dot'; dot.dataset.idx = i;
+    dot.addEventListener('click', ()=>goToStep(i));
+    dotsWrap.appendChild(dot);
+  });
+
+  function optionalStep(i){ return [2,5,8,10,11,12,13].includes(i); }
+
+  function goToStep(i){
+    if(i<0) i=0; if(i>TOTAL_STEPS-1) i=TOTAL_STEPS-1;
+    state.currentStep = i;
+    steps.forEach(s=> s.classList.toggle('active', +s.dataset.step === i));
+    document.getElementById('btn-back').disabled = (i===0);
+    document.getElementById('btn-skip').style.visibility = (optionalStep(i) && i!==TOTAL_STEPS-1) ? 'visible' : 'hidden';
+    const nextBtn = document.getElementById('btn-next');
+    if(i === TOTAL_STEPS-1){ nextBtn.style.display='none'; } else { nextBtn.style.display='inline-block'; nextBtn.textContent = t('btn_next'); }
+    updateProgress();
+    document.querySelector('.form-side').scrollTop = 0;
+  }
+  function updateProgress(){
+    const i = state.currentStep;
+    const pct = Math.round(((i+1)/TOTAL_STEPS)*100);
+    document.getElementById('progress-fill').style.width = pct+'%';
+    document.getElementById('progress-text').textContent = t('progress_step')+' '+(i+1)+' '+t('progress_of')+' '+TOTAL_STEPS;
+    const names = t('review_names');
+    document.getElementById('progress-step-name').textContent = names[i] || '';
+    dotsWrap.querySelectorAll('.wizard-dot').forEach(d=>{
+      const idx = +d.dataset.idx;
+      d.classList.toggle('active', idx===i);
+      d.classList.toggle('done', idx<i);
+    });
+  }
+  document.getElementById('btn-back').addEventListener('click', ()=>goToStep(state.currentStep-1));
+  document.getElementById('btn-next').addEventListener('click', ()=>goToStep(state.currentStep+1));
+  document.getElementById('btn-skip').addEventListener('click', ()=>goToStep(state.currentStep+1));
+
+  // ---------------- review step ----------------
+  function stepFilled(i){
+    switch(i){
+      case 0: return true;
+      case 1: return true;
+      case 2: return !!state.photo;
+      case 3: return !!(document.getElementById('f-name').value.trim() || document.getElementById('f-email').value.trim());
+      case 4: return !!document.getElementById('f-profile').value.trim();
+      case 5: return !!document.getElementById('f-summary').value.trim();
+      case 6: return state.competencies.some(x=>x.name);
+      case 7: return state.languages.some(x=>x.name);
+      case 8: return state.certs.some(x=>x.name);
+      case 9: return state.education.some(x=>x.school||x.major);
+      case 10: return state.experience.some(x=>x.company||x.position);
+      case 11: return state.training.some(x=>x.name);
+      case 12: return state.org.some(x=>x.name);
+      case 13: return state.addskills.some(x=>x.name);
+      default: return false;
+    }
+  }
+  function renderReview(){
+    const names = t('review_names');
+    const list = document.getElementById('review-list');
+    if(!list) return;
+    list.innerHTML = names.map((n,i)=>{
+      const filled = stepFilled(i);
+      const statusText = filled ? t('review_filled') : t('review_empty');
+      const statusClass = filled ? 'filled' : '';
+      return '<li><span>'+n+'</span><span style="display:flex;align-items:center;gap:10px;"><span class="review-status '+statusClass+'">'+statusText+'</span><button class="review-edit" data-goto="'+i+'">'+t('review_edit')+'</button></span></li>';
+    }).join('');
+    list.querySelectorAll('.review-edit').forEach(btn=>{
+      btn.addEventListener('click', ()=>goToStep(+btn.dataset.goto));
+    });
+  }
+
+  // ---------------- splash gate: triple-tap within 1 second ----------------
+  (function(){
+    const gate = document.getElementById('splash-gate');
+    const appRoot = document.getElementById('app-root');
+    let tapTimes = [];
+    function unlock(){
+      gate.classList.add('fading');
+      setTimeout(()=>{ gate.classList.add('hidden'); }, 650);
+      appRoot.classList.add('app-ready');
+      setTimeout(()=>{ if(window.__applyCvScale) window.__applyCvScale(); }, 100);
+    }
+    gate.addEventListener('click', ()=>{
+      const now = Date.now();
+      tapTimes.push(now);
+      tapTimes = tapTimes.filter(tm => now - tm <= 1000);
+      if(tapTimes.length >= 3){ unlock(); }
+    });
+  })();
+
+  // ---------------- responsive scaling of CV preview on narrow screens ----------------
+  (function(){
+    const wrap = document.getElementById('cv-scale-wrap');
+    const page = document.getElementById('cv-page');
+    if(!wrap || !page) return;
+    function applyScale(){
+      const availableWidth = wrap.parentElement.clientWidth;
+      const scale = Math.min(1, availableWidth / page.offsetWidth);
+      page.style.transform = 'scale(' + scale + ')';
+      page.style.transformOrigin = 'top center';
+      wrap.style.height = (page.offsetHeight * scale) + 'px';
+    }
+    window.addEventListener('resize', applyScale);
+    window.addEventListener('orientationchange', ()=>setTimeout(applyScale, 150));
+    if(window.ResizeObserver){ new ResizeObserver(applyScale).observe(page); }
+    window.__applyCvScale = applyScale;
+    setTimeout(applyScale, 50);
+  })();
+
+  // ---------------- init ----------------
+  applyDesign();
+  applyLanguage();
+  goToStep(0);
+  if(window.__applyCvScale) setTimeout(window.__applyCvScale, 100);
+})();
+</script>
+</body>
+</html>
