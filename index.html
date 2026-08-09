@@ -1252,11 +1252,12 @@
     });
   }
 
-  // ---------------- splash gate: triple-tap within 1 second ----------------
+  // ---------------- splash gate: exactly 6 taps within a 1.5s window ----------------
   (function(){
     const gate = document.getElementById('splash-gate');
     const appRoot = document.getElementById('app-root');
-    let tapTimes = [];
+    let tapCount = 0;
+    let windowTimer = null;
     function unlock(){
       gate.classList.add('fading');
       setTimeout(()=>{ gate.classList.add('hidden'); }, 650);
@@ -1264,10 +1265,15 @@
       setTimeout(()=>{ if(window.__applyCvScale) window.__applyCvScale(); }, 100);
     }
     gate.addEventListener('click', ()=>{
-      const now = Date.now();
-      tapTimes.push(now);
-      tapTimes = tapTimes.filter(tm => now - tm <= 1500);
-      if(tapTimes.length >= 6){ unlock(); }
+      tapCount++;
+      if(windowTimer === null){
+        // first tap of a new attempt: start the 1.5s window, evaluate only when it ends
+        windowTimer = setTimeout(()=>{
+          if(tapCount === 6){ unlock(); }
+          tapCount = 0;
+          windowTimer = null;
+        }, 1500);
+      }
     });
   })();
 
