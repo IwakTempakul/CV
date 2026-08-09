@@ -336,6 +336,26 @@
     }
     body{background:#fff;}
   }
+
+  /* ---- PNG export mode: mirrors the @media print rules above exactly, but
+     toggled via JS (class on <body>) instead of an actual print event, so
+     html2canvas captures the same clean single-page layout as the PDF ---- */
+  body.png-export-mode{ overflow:hidden !important; }
+  body.png-export-mode .form-side,
+  body.png-export-mode .preview-toolbar{ display:none !important; }
+  body.png-export-mode .app{ display:block !important; }
+  body.png-export-mode .preview-side{
+    padding:0 !important; background:#fff !important; max-height:296mm !important;
+    height:296mm !important; overflow:hidden !important; display:block !important;
+  }
+  body.png-export-mode .cv-page-fit{
+    width:210mm !important; height:296mm !important; max-height:296mm !important; overflow:hidden !important;
+    margin:0 !important; position:relative !important; display:block !important;
+  }
+  body.png-export-mode .cv-container{
+    box-shadow:none !important; width:210mm !important; max-width:210mm !important;
+    margin:0 !important; transform-origin:top left;
+  }
 </style>
 </head>
 <body>
@@ -1226,8 +1246,11 @@
     const scale = availablePx / contentHeightPx;
 
     if(fitWrap){
+      fitWrap.style.width = '210mm';
+      fitWrap.style.maxWidth = '210mm';
       fitWrap.style.height = TARGET_MM + 'mm';
       fitWrap.style.maxHeight = TARGET_MM + 'mm';
+      fitWrap.style.margin = '0';
       fitWrap.style.overflow = 'hidden';
     }
 
@@ -1262,8 +1285,11 @@
     page.style.maxWidth = '';
     page.style.overflow = '';
     if(fitWrap){
+      fitWrap.style.width = '';
+      fitWrap.style.maxWidth = '';
       fitWrap.style.height = '';
       fitWrap.style.maxHeight = '';
+      fitWrap.style.margin = '';
       fitWrap.style.overflow = '';
     }
   }
@@ -1302,18 +1328,29 @@
     const originalText = btn ? btn.textContent : null;
     if(btn){ btn.disabled = true; btn.textContent = (state.cvLang==='en' ? 'Preparing…' : 'Menyiapkan…'); }
     try{
+      // Switch into a layout that is byte-for-byte identical to the PDF/print
+      // layout (form hidden, single clean 210mm x 296mm page) before measuring
+      // and capturing, so the PNG matches the PDF exactly instead of looking
+      // like a cropped screen-shot of the on-screen wizard layout.
+      document.body.classList.add('png-export-mode');
+      window.scrollTo(0, 0);
       fitCvToOnePage();
-      // give layout a tick to settle (mirrors the print flow) before capture
+      // give layout a tick to settle before capture
       await new Promise(res => requestAnimationFrame(()=>requestAnimationFrame(res)));
       const target = document.getElementById('cv-page-fit');
+      const rect = target.getBoundingClientRect();
       const canvas = await html2canvas(target, {
         scale: 3,
         useCORS: true,
         backgroundColor: '#ffffff',
-        width: target.offsetWidth,
-        height: target.offsetHeight,
-        windowWidth: target.scrollWidth,
-        windowHeight: target.scrollHeight
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0,
+        width: rect.width,
+        height: rect.height,
+        windowWidth: document.documentElement.scrollWidth,
+        windowHeight: document.documentElement.scrollHeight
       });
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
@@ -1328,6 +1365,7 @@
       console.error(err);
     } finally{
       resetCvScale();
+      document.body.classList.remove('png-export-mode');
       if(btn){ btn.disabled = false; btn.textContent = originalText; }
     }
   }
