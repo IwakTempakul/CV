@@ -1223,6 +1223,9 @@
     // Build an isolated, offscreen clone at full fixed width (850px), completely detached
     // from the mobile scaling wrapper / scrollable ancestors / responsive media queries
     // that were causing the sidebar to render shifted on phones.
+    // IMPORTANT: use position:absolute + fully opaque (not opacity:0 / position:fixed) —
+    // some mobile browsers fail to paint grid layouts inside opacity:0/fixed ancestors,
+    // which was cutting the main (white) column out of the capture entirely.
     const clone = page.cloneNode(true);
     clone.id = 'cv-page-pdf-clone';
     clone.style.transform = 'none';
@@ -1231,26 +1234,56 @@
     clone.style.width = page.offsetWidth + 'px';
 
     const captureHost = document.createElement('div');
-    captureHost.style.position = 'fixed';
+    captureHost.style.position = 'absolute';
     captureHost.style.top = '0';
-    captureHost.style.left = '0';
-    captureHost.style.zIndex = '-1';
-    captureHost.style.opacity = '0';
+    captureHost.style.left = '-10000px';
     captureHost.style.pointerEvents = 'none';
     captureHost.style.background = '#ffffff';
     captureHost.appendChild(clone);
     document.body.appendChild(captureHost);
 
+    // force a layout flush and wait a frame so the grid/fonts/images in the clone
+    // are fully measured before html2canvas reads its dimensions
+    void clone.offsetHeight;
+    await new Promise(res => requestAnimationFrame(()=>requestAnimationFrame(res)));
+
     try{
-      const canvas = await window.html2canvas(clone, {
+      let canvas = await window.html2canvas(clone, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
-        width: clone.offsetWidth,
-        height: clone.offsetHeight,
-        windowWidth: clone.offsetWidth,
-        windowHeight: clone.offsetHeight
+        windowWidth: clone.scrollWidth,
+        windowHeight: clone.scrollHeight
       });
+
+      // Safety net: if the clone capture looks wrong (e.g. only the ~280px sidebar
+      // got painted instead of the full ~850px two-column layout), fall back to
+      // capturing the live, on-screen element directly.
+      const expectedWidthPx = clone.scrollWidth * 2; // scale:2
+      if(canvas.width < expectedWidthPx * 0.7){
+        const prevTransform = page.style.transform;
+        const prevTransformOrigin = page.style.transformOrigin;
+        const prevBoxShadow = page.style.boxShadow;
+        page.style.transform = 'none';
+        page.style.transformOrigin = 'top left';
+        page.style.boxShadow = 'none';
+        void page.offsetHeight;
+        await new Promise(res => requestAnimationFrame(()=>requestAnimationFrame(res)));
+        try{
+          canvas = await window.html2canvas(page, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            windowWidth: page.scrollWidth,
+            windowHeight: page.scrollHeight
+          });
+        } finally {
+          page.style.transform = prevTransform;
+          page.style.transformOrigin = prevTransformOrigin;
+          page.style.boxShadow = prevBoxShadow;
+          if(window.__applyCvScale) window.__applyCvScale();
+        }
+      }
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
