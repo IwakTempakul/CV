@@ -309,14 +309,23 @@
   .app{ display:none; }
   .app.app-ready{ display:grid; }
 
+  .cv-page-fit{ width:100%; display:flex; justify-content:center; }
+
   @media (max-width:1000px){ .app{grid-template-columns:1fr;} .form-side,.preview-side{max-height:none;} }
   @media print{
     @page{ margin:0; size:A4; }
     *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
     .form-side, .preview-toolbar{display:none !important;}
     .app{display:block;}
-    .preview-side{padding:0;background:#fff;max-height:none;}
-    .cv-container{box-shadow:none;width:210mm !important;max-width:210mm !important;min-height:297mm;margin:0;}
+    .preview-side{padding:0;background:#fff;max-height:none;overflow:visible;}
+    .cv-page-fit{
+      width:210mm; height:297mm; max-height:297mm; overflow:hidden;
+      margin:0; position:relative; display:block; page-break-after:avoid; page-break-inside:avoid;
+    }
+    .cv-container{
+      box-shadow:none; width:210mm !important; max-width:210mm !important;
+      margin:0; transform-origin:top left;
+    }
     body{background:#fff;}
   }
 </style>
@@ -574,6 +583,7 @@
       <button class="btn btn-primary" id="download-btn" type="button" data-i18n="btn_download">⬇ Unduh PDF</button>
     </div>
 
+    <div class="cv-page-fit" id="cv-page-fit">
     <div class="cv-container" id="cv-page">
       <div class="sidebar">
         <div class="photo-box shape-square" id="p-photo-box"><span data-i18n="photo_ph_short">Foto</span></div>
@@ -640,6 +650,7 @@
           <ul class="skills-grid" id="p-addskills"></ul>
         </section>
       </div>
+    </div>
     </div>
   </div>
 
@@ -1180,6 +1191,53 @@
     el.textContent = val || ph;
     el.className = val ? '' : 'placeholder';
   }
+
+  // ---------------- force-fit CV onto a single, full A4 page for printing/PDF ----------------
+  function fitCvToOnePage(){
+    const page = document.getElementById('cv-page');
+    // measure the CV's natural (unscaled) content height at print width (210mm)
+    page.style.transform = 'none';
+    page.style.position = 'static';
+    page.style.width = '210mm';
+    page.style.maxWidth = '210mm';
+    page.style.height = 'auto';
+    page.style.minHeight = '0';
+    void page.offsetHeight; // force reflow before measuring
+    const contentHeightPx = page.scrollHeight;
+
+    const mmToPx = 96/25.4;
+    const availablePx = 297 * mmToPx; // one A4 page height in CSS px
+    const scale = availablePx / contentHeightPx;
+
+    if(scale >= 1){
+      // content is shorter than one page: stretch it to fill the full paper height
+      // (sidebar/main backgrounds extend edge-to-edge) instead of leaving blank space
+      page.style.transform = 'none';
+      page.style.position = 'static';
+      page.style.height = '297mm';
+      page.style.minHeight = '297mm';
+    } else {
+      // content is longer than one page: shrink it down so it all fits on one page
+      const clampedScale = Math.max(scale, 0.4); // safety floor so text stays legible
+      page.style.height = 'auto';
+      page.style.minHeight = '0';
+      page.style.position = 'absolute';
+      page.style.top = '0';
+      page.style.left = '0';
+      page.style.transform = 'scale(' + clampedScale + ')';
+    }
+  }
+  function resetCvScale(){
+    const page = document.getElementById('cv-page');
+    page.style.transform = '';
+    page.style.position = '';
+    page.style.height = '';
+    page.style.minHeight = '';
+    page.style.width = '';
+    page.style.maxWidth = '';
+  }
+  window.addEventListener('beforeprint', fitCvToOnePage);
+  window.addEventListener('afterprint', resetCvScale);
 
   document.getElementById('download-btn').addEventListener('click', ()=>window.print());
   document.getElementById('download-btn-step').addEventListener('click', ()=>window.print());
