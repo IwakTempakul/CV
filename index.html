@@ -151,16 +151,6 @@
   .custom-color-wrap{display:flex;align-items:center;gap:8px;margin-top:10px;}
   .custom-color-wrap input[type=color]{width:34px;height:28px;padding:0;border:1px solid #d8d4c4;border-radius:4px;cursor:pointer;background:#fff;}
   .custom-color-wrap label{margin:0;}
-  .custom-color-wrap{flex-wrap:wrap;}
-  .custom-color-text{
-    font-family:'Inter',Arial,sans-serif;font-size:12.5px;padding:6px 8px;border:1px solid #d8d4c4;
-    border-radius:4px;background:#fff;color:#2b2b28;width:104px;
-  }
-  .custom-color-text:focus{ outline:2px solid #d3a75c; outline-offset:1px; border-color:#d3a75c; }
-  .custom-color-text.invalid{ border-color:#9c4444; }
-  .custom-rgb-input{ width:52px; text-align:center; }
-  .custom-rgb-input::-webkit-inner-spin-button, .custom-rgb-input::-webkit-outer-spin-button{ -webkit-appearance:none; margin:0; }
-  .custom-rgb-input{ -moz-appearance:textfield; }
 
   /* ---- font picker ---- */
   .font-option-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;max-height:280px;overflow-y:auto;padding-right:4px;}
@@ -309,23 +299,14 @@
   .app{ display:none; }
   .app.app-ready{ display:grid; }
 
-  .cv-page-fit{ width:100%; display:flex; justify-content:center; }
-
   @media (max-width:1000px){ .app{grid-template-columns:1fr;} .form-side,.preview-side{max-height:none;} }
   @media print{
     @page{ margin:0; size:A4; }
     *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
     .form-side, .preview-toolbar{display:none !important;}
     .app{display:block;}
-    .preview-side{padding:0;background:#fff;max-height:none;overflow:visible;}
-    .cv-page-fit{
-      width:210mm; height:297mm; max-height:297mm; overflow:hidden;
-      margin:0; position:relative; display:block; page-break-after:avoid; page-break-inside:avoid;
-    }
-    .cv-container{
-      box-shadow:none; width:210mm !important; max-width:210mm !important;
-      margin:0; transform-origin:top left;
-    }
+    .preview-side{padding:0;background:#fff;max-height:none;}
+    .cv-container{box-shadow:none;width:210mm !important;max-width:210mm !important;min-height:297mm;margin:0;}
     body{background:#fff;}
   }
 </style>
@@ -419,15 +400,7 @@
       <div class="custom-color-wrap">
         <label style="margin:0;" data-i18n="label_custom">Kustom:</label>
         <input type="color" id="custom-color-input" value="#3b3222">
-        <input type="text" id="custom-color-hex" class="custom-color-text" data-i18n-placeholder="ph_hex" placeholder="#3B3222" maxlength="7">
       </div>
-      <div class="custom-color-wrap custom-rgb-wrap">
-        <label style="margin:0;" data-i18n="label_rgb">RGB:</label>
-        <input type="number" id="custom-color-r" class="custom-color-text custom-rgb-input" data-i18n-placeholder="ph_r" placeholder="R" min="0" max="255">
-        <input type="number" id="custom-color-g" class="custom-color-text custom-rgb-input" data-i18n-placeholder="ph_g" placeholder="G" min="0" max="255">
-        <input type="number" id="custom-color-b" class="custom-color-text custom-rgb-input" data-i18n-placeholder="ph_b" placeholder="B" min="0" max="255">
-      </div>
-      <div class="hint" id="custom-color-error" style="display:none;color:#9c4444;"></div>
 
       <label style="margin-top:18px;" data-i18n="label_font">Font CV</label>
       <div class="font-option-row" id="font-picker"></div>
@@ -456,17 +429,17 @@
       <h2 class="step-question" data-i18n="step_personal_q">Siapa nama Anda, dan posisi apa yang dituju?</h2>
       <p class="step-help" data-i18n="step_personal_help">Data kontak ini akan tampil di sidebar CV.</p>
       <label for="f-name" data-i18n="label_name">Nama lengkap</label>
-      <input type="text" id="f-name" data-i18n-placeholder="ph_name" placeholder="mis. Ahmad Fadli">
+      <input type="text" id="f-name" placeholder="e.g. Ahmad Fadli">
       <label for="f-role" data-i18n="label_role">Posisi / target jabatan</label>
-      <input type="text" id="f-role" data-i18n-placeholder="ph_role" placeholder="mis. Lulusan Teknik Mesin">
+      <input type="text" id="f-role" placeholder="e.g. Mechanical Engineering Graduate">
       <label for="f-address" data-i18n="label_address">Alamat</label>
-      <input type="text" id="f-address" data-i18n-placeholder="ph_address" placeholder="Kota, Provinsi, Negara">
+      <input type="text" id="f-address" placeholder="City, Province, Country">
       <div class="row2">
-        <div><label for="f-phone" data-i18n="label_phone">Telepon</label><input type="tel" id="f-phone" data-i18n-placeholder="ph_phone" placeholder="+62 812 3456 7890"></div>
-        <div><label for="f-email" data-i18n="label_email">Email</label><input type="email" id="f-email" data-i18n-placeholder="ph_email" placeholder="nama@email.com"></div>
+        <div><label for="f-phone" data-i18n="label_phone">Telepon</label><input type="tel" id="f-phone" placeholder="+62 812 3456 7890"></div>
+        <div><label for="f-email" data-i18n="label_email">Email</label><input type="email" id="f-email" placeholder="name@email.com"></div>
       </div>
       <label for="f-link" data-i18n="label_link">LinkedIn / portofolio (opsional)</label>
-      <input type="text" id="f-link" data-i18n-placeholder="ph_link" placeholder="opsional">
+      <input type="text" id="f-link" placeholder="optional">
     </div>
 
     <!-- STEP 4: PROFILE SHORT -->
@@ -474,7 +447,7 @@
       <div class="step-kicker" data-i18n="step_profile_kicker">Langkah 5</div>
       <h2 class="step-question" data-i18n="step_profile_q">Bagaimana Anda mendeskripsikan diri secara singkat?</h2>
       <p class="step-help" data-i18n="step_profile_help">2–3 kalimat singkat yang akan tampil di sidebar.</p>
-      <textarea id="f-profile" data-i18n-placeholder="ph_profile" placeholder="mis. Lulusan baru program Teknik Mesin di..."></textarea>
+      <textarea id="f-profile" placeholder="e.g. Fresh graduate of the Mechanical Engineering program at..."></textarea>
     </div>
 
     <!-- STEP 5: SUMMARY LONG -->
@@ -482,7 +455,7 @@
       <div class="step-kicker" data-i18n="step_summary_kicker">Langkah 6</div>
       <h2 class="step-question" data-i18n="step_summary_q">Tulis ringkasan profesional yang lebih lengkap</h2>
       <p class="step-help" data-i18n="step_summary_help">Paragraf ini akan tampil di kolom utama CV. Boleh dilewati jika Anda hanya ingin memakai profil singkat.</p>
-      <textarea id="f-summary" data-i18n-placeholder="ph_summary" placeholder="Lulusan baru yang sangat termotivasi..."></textarea>
+      <textarea id="f-summary" placeholder="Highly motivated fresh graduate..."></textarea>
     </div>
 
     <!-- STEP 6: COMPETENCIES -->
@@ -583,18 +556,17 @@
       <button class="btn btn-primary" id="download-btn" type="button" data-i18n="btn_download">⬇ Unduh PDF</button>
     </div>
 
-    <div class="cv-page-fit" id="cv-page-fit">
     <div class="cv-container" id="cv-page">
       <div class="sidebar">
         <div class="photo-box shape-square" id="p-photo-box"><span data-i18n="photo_ph_short">Foto</span></div>
-        <h1 id="p-name" class="placeholder">[Nama Lengkap]</h1>
-        <div class="role" id="p-role">Target Jabatan</div>
+        <h1 id="p-name" class="placeholder">[Full Name]</h1>
+        <div class="role" id="p-role">Target Role</div>
 
         <div class="contact-block">
           <h2 class="h2-contact" data-i18n="h_contact">Kontak</h2>
-          <div class="contact-item">📍 <span id="p-address" class="placeholder">[Alamat]</span></div>
-          <div class="contact-item">📞 <span id="p-phone" class="placeholder">[Nomor telepon]</span></div>
-          <div class="contact-item">✉️ <span id="p-email" class="placeholder">[Alamat email]</span></div>
+          <div class="contact-item">📍 <span id="p-address" class="placeholder">[Address]</span></div>
+          <div class="contact-item">📞 <span id="p-phone" class="placeholder">[Phone number]</span></div>
+          <div class="contact-item">✉️ <span id="p-email" class="placeholder">[Email address]</span></div>
           <div class="contact-item" id="p-link-wrap" style="display:none;">🔗 <span id="p-link"></span></div>
         </div>
 
@@ -651,7 +623,6 @@
         </section>
       </div>
     </div>
-    </div>
   </div>
 
 </div>
@@ -695,33 +666,7 @@
       progress_step:'Langkah', progress_of:'dari',
       review_edit:'Edit', review_filled:'Terisi', review_empty:'Kosong',
       review_names:['Bahasa CV','Tampilan & warna','Foto','Informasi pribadi','Profil singkat','Ringkasan profesional','Kompetensi utama','Bahasa yang dikuasai','Sertifikasi','Pendidikan','Pengalaman kerja/magang','Pelatihan & workshop','Pengalaman organisasi','Keterampilan tambahan'],
-      level_select_ph:'Pilih tingkat', level_basic:'Dasar', level_elementary:'Pemula', level_intermediate:'Menengah', level_upper_intermediate:'Menengah Atas', level_advanced:'Mahir', level_fluent:'Fasih', level_native:'Bahasa Ibu',
-      ph_hex:'#3B3222', label_rgb:'RGB:', ph_r:'R', ph_g:'G', ph_b:'B', err_hex:'Format HEX tidak valid, contoh: #3B3222', err_rgb:'Isi R, G, B dengan angka 0–255',
-      btn_remove_item:'Hapus',
-      field_competency:'Kompetensi', ph_competency:'mis. Pengoperasian mesin CNC',
-      field_language:'Bahasa', ph_language_name:'mis. Bahasa Inggris',
-      field_proficiency:'Tingkat kemahiran',
-      field_certification:'Sertifikasi', ph_certification:'mis. Sertifikat Operator CNC',
-      field_school:'Sekolah / institusi', ph_school:'mis. SMK Negeri 6 Samarinda',
-      field_major:'Jurusan / program', ph_major:'mis. Teknik Mesin',
-      field_start_year:'Tahun mulai', ph_start_year:'mis. 2023',
-      field_end_year:'Tahun selesai', ph_end_year:'mis. 2026',
-      field_edu_details:'Detail (satu poin per baris)', ph_edu_details:'Mempelajari mata pelajaran inti...\nMemperoleh pengalaman praktik langsung...',
-      field_company:'Perusahaan / instansi', ph_company:'mis. PT Contoh Manufaktur',
-      field_position:'Posisi / divisi', ph_position:'mis. Magang Produksi',
-      field_start_date:'Tanggal mulai', ph_start_date:'mis. Jan 2025',
-      field_end_date:'Tanggal selesai', ph_end_date:'mis. Mar 2025',
-      field_exp_details:'Tugas / pencapaian (satu poin per baris)', ph_exp_details:'Mengoperasikan mesin bubut/CNC...\nMenggunakan alat/perangkat lunak...',
-      field_training:'Pelatihan / workshop', ph_training:'mis. Pelatihan K3, 2025',
-      field_activity:'Kegiatan', ph_activity:'mis. Anggota OSIS, 2024',
-      field_skill:'Keterampilan', ph_skill:'mis. Microsoft Excel',
-      card_competency:'Kompetensi', card_language:'Bahasa', card_certification:'Sertifikasi', card_education:'Pendidikan',
-      card_position:'Posisi', card_training:'Pelatihan', card_activity:'Kegiatan', card_skill:'Keterampilan',
-      ph_name:'mis. Ahmad Fadli', ph_role:'mis. Lulusan Teknik Mesin', ph_address:'Kota, Provinsi, Negara',
-      ph_phone:'+62 812 3456 7890', ph_email:'nama@email.com', ph_link:'opsional',
-      ph_profile:'mis. Lulusan baru program Teknik Mesin di...', ph_summary:'Lulusan baru yang sangat termotivasi...',
-      ph_full_name_preview:'[Nama Lengkap]', ph_role_preview:'Target Jabatan', ph_address_preview:'[Alamat]', ph_phone_preview:'[Nomor telepon]', ph_email_preview:'[Alamat email]',
-      ph_school_preview:'Sekolah / Institusi', ph_company_preview:'Perusahaan / Institusi'
+      level_select_ph:'Pilih tingkat', level_basic:'Dasar', level_elementary:'Pemula', level_intermediate:'Menengah', level_upper_intermediate:'Menengah Atas', level_advanced:'Mahir', level_fluent:'Fasih', level_native:'Bahasa Ibu'
     },
     en: {
       app_title:'Step-by-Step Wizard',
@@ -751,46 +696,19 @@
       progress_step:'Step', progress_of:'of',
       review_edit:'Edit', review_filled:'Filled', review_empty:'Empty',
       review_names:['CV language','Look & color','Photo','Personal information','Short profile','Professional summary','Core competencies','Languages','Certifications','Education','Work/internship experience','Training & workshops','Organizational experience','Additional skills'],
-      level_select_ph:'Select level', level_basic:'Basic', level_elementary:'Elementary', level_intermediate:'Intermediate', level_upper_intermediate:'Upper Intermediate', level_advanced:'Advanced', level_fluent:'Fluent', level_native:'Native',
-      ph_hex:'#3B3222', label_rgb:'RGB:', ph_r:'R', ph_g:'G', ph_b:'B', err_hex:'Invalid HEX format, e.g. #3B3222', err_rgb:'Enter R, G, B as numbers 0–255',
-      btn_remove_item:'Remove',
-      field_competency:'Competency', ph_competency:'e.g. CNC machine operation',
-      field_language:'Language', ph_language_name:'e.g. English',
-      field_proficiency:'Proficiency',
-      field_certification:'Certification', ph_certification:'e.g. CNC Operator Certificate',
-      field_school:'School / institution', ph_school:'e.g. SMK Negeri 6 Samarinda',
-      field_major:'Major / program', ph_major:'e.g. Mechanical Engineering',
-      field_start_year:'Start year', ph_start_year:'e.g. 2023',
-      field_end_year:'End year', ph_end_year:'e.g. 2026',
-      field_edu_details:'Details (one point per line)', ph_edu_details:'Studied core subjects...\nGained hands-on experience...',
-      field_company:'Company / institution', ph_company:'e.g. PT Example Manufacturing',
-      field_position:'Position / division', ph_position:'e.g. Production Intern',
-      field_start_date:'Start date', ph_start_date:'e.g. Jan 2025',
-      field_end_date:'End date', ph_end_date:'e.g. Mar 2025',
-      field_exp_details:'Tasks / achievements (one point per line)', ph_exp_details:'Operated lathe/CNC machines...\nUsed tools/software...',
-      field_training:'Training / workshop', ph_training:'e.g. Workshop Safety (K3) Training, 2025',
-      field_activity:'Activity', ph_activity:'e.g. Member of OSIS, 2024',
-      field_skill:'Skill', ph_skill:'e.g. Microsoft Excel',
-      card_competency:'Competency', card_language:'Language', card_certification:'Certification', card_education:'Education',
-      card_position:'Position', card_training:'Training', card_activity:'Activity', card_skill:'Skill',
-      ph_name:'e.g. Ahmad Fadli', ph_role:'e.g. Mechanical Engineering Graduate', ph_address:'City, Province, Country',
-      ph_phone:'+62 812 3456 7890', ph_email:'name@email.com', ph_link:'optional',
-      ph_profile:'e.g. Fresh graduate of the Mechanical Engineering program at...', ph_summary:'Highly motivated fresh graduate...',
-      ph_full_name_preview:'[Full Name]', ph_role_preview:'Target Role', ph_address_preview:'[Address]', ph_phone_preview:'[Phone number]', ph_email_preview:'[Email address]',
-      ph_school_preview:'School / Institution', ph_company_preview:'Company / Institution'
+      level_select_ph:'Select level', level_basic:'Basic', level_elementary:'Elementary', level_intermediate:'Intermediate', level_upper_intermediate:'Upper Intermediate', level_advanced:'Advanced', level_fluent:'Fluent', level_native:'Native'
     }
   };
   function t(key){ return (I18N[state.cvLang] && I18N[state.cvLang][key]) || I18N.id[key] || key; }
   function applyLanguage(){
     document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
     document.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML = t(el.getAttribute('data-i18n-html')); });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{ el.placeholder = t(el.getAttribute('data-i18n-placeholder')); });
     document.getElementById('app-title').textContent = t('app_title');
     document.getElementById('app-subtitle').textContent = t('app_subtitle');
     document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active', o.dataset.lang===state.cvLang));
     updateProgress();
     renderReview();
-    if(typeof allRepeatableRenders !== 'undefined'){ allRepeatableRenders.forEach(fn=>fn()); }
+    if(typeof renderLanguagesList === 'function'){ renderLanguagesList(); }
     render();
   }
 
@@ -932,78 +850,22 @@
   });
   function currentShape(){ return SHAPES.find(s=>s.key===state.photoShape) || SHAPES[0]; }
 
-  const hexInput = document.getElementById('custom-color-hex');
-  const rInput = document.getElementById('custom-color-r');
-  const gInput = document.getElementById('custom-color-g');
-  const bInput = document.getElementById('custom-color-b');
-  const colorErrorEl = document.getElementById('custom-color-error');
-  function hexToRgb(hex){
-    const c = hex.replace('#','');
-    return { r: parseInt(c.substring(0,2),16), g: parseInt(c.substring(2,4),16), b: parseInt(c.substring(4,6),16) };
-  }
-  function rgbToHex(r,g,b){
-    return '#' + [r,g,b].map(v=>Math.max(0,Math.min(255,v)).toString(16).padStart(2,'0')).join('');
-  }
-  function syncCustomColorFields(hex, opts){
-    opts = opts || {};
-    if(opts.skipPicker !== true) document.getElementById('custom-color-input').value = hex;
-    if(opts.skipHex !== true) hexInput.value = hex.toUpperCase();
-    if(opts.skipRgb !== true){
-      const {r,g,b} = hexToRgb(hex);
-      rInput.value = r; gInput.value = g; bInput.value = b;
-    }
-  }
-  function applyCustomColor(hex, opts){
-    document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
-    state.sidebarColor = hex;
-    state.sidebarAccent = isLight(hex) ? '#8a6d22' : '#d3a75c';
-    syncCustomColorFields(hex, opts);
-    hexInput.classList.remove('invalid'); [rInput,gInput,bInput].forEach(el=>el.classList.remove('invalid'));
-    colorErrorEl.style.display = 'none';
-    applyDesign();
-  }
-
   document.querySelectorAll('#color-picker .color-swatch').forEach(sw=>{
     sw.addEventListener('click', ()=>{
       document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
       sw.classList.add('active');
       state.sidebarColor = sw.dataset.color;
       state.sidebarAccent = sw.dataset.accent;
-      syncCustomColorFields(sw.dataset.color);
+      document.getElementById('custom-color-input').value = sw.dataset.color;
       applyDesign();
     });
   });
   document.getElementById('custom-color-input').addEventListener('input', (e)=>{
-    applyCustomColor(e.target.value, {skipPicker:true});
+    document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
+    state.sidebarColor = e.target.value;
+    state.sidebarAccent = isLight(e.target.value) ? '#8a6d22' : '#d3a75c';
+    applyDesign();
   });
-  hexInput.addEventListener('input', (e)=>{
-    const raw = e.target.value.trim();
-    const hex = raw.startsWith('#') ? raw : '#'+raw;
-    if(/^#[0-9A-Fa-f]{6}$/.test(hex)){
-      applyCustomColor(hex, {skipHex:true});
-    } else {
-      hexInput.classList.add('invalid');
-      colorErrorEl.textContent = t('err_hex');
-      colorErrorEl.style.display = 'block';
-    }
-  });
-  function handleRgbInput(){
-    let r = parseInt(rInput.value,10), g = parseInt(gInput.value,10), b = parseInt(bInput.value,10);
-    const hasR = rInput.value.trim() !== '', hasG = gInput.value.trim() !== '', hasB = bInput.value.trim() !== '';
-    if(!hasR || !hasG || !hasB || Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)){
-      [rInput,gInput,bInput].forEach(el=>el.classList.add('invalid'));
-      colorErrorEl.textContent = t('err_rgb');
-      colorErrorEl.style.display = 'block';
-      return;
-    }
-    r = Math.max(0, Math.min(255, r));
-    g = Math.max(0, Math.min(255, g));
-    b = Math.max(0, Math.min(255, b));
-    rInput.value = r; gInput.value = g; bInput.value = b;
-    applyCustomColor(rgbToHex(r,g,b), {skipRgb:true});
-  }
-  [rInput,gInput,bInput].forEach(el=> el.addEventListener('input', handleRgbInput));
-  syncCustomColorFields(state.sidebarColor);
 
   // ---------------- photo ----------------
   const photoInput = document.getElementById('photo-input');
@@ -1032,7 +894,6 @@
   });
 
   // ---------------- repeatable lists ----------------
-  const allRepeatableRenders = [];
   function makeRepeatable(containerId, addBtnId, arr, fieldsDef, cardLabelKey){
     function addItem(){ const item={_id:uid()}; fieldsDef.forEach(f=>item[f.key]=''); arr.push(item); renderList(); render(); renderReview(); }
     function renderList(){
@@ -1040,7 +901,7 @@
       container.innerHTML = '';
       arr.forEach((item, idx)=>{
         const card = document.createElement('div'); card.className='item-card';
-        let html = '<div class="item-card-head"><span class="item-card-label">'+t(cardLabelKey)+' '+(idx+1)+'</span><span class="btn-remove" data-idx="'+idx+'">'+ t('btn_remove_item') +'</span></div>';
+        let html = '<div class="item-card-head"><span class="item-card-label">'+cardLabelKey+' '+(idx+1)+'</span><span class="btn-remove" data-idx="'+idx+'">'+ (state.cvLang==='en'?'Remove':'Hapus') +'</span></div>';
         fieldsDef.forEach(f=>{
           if(f.row){
             html += '<div class="row2">';
@@ -1058,12 +919,10 @@
         inp.addEventListener('change', ()=>{ arr[+inp.dataset.idx][inp.dataset.field]=inp.value; render(); renderReview(); });
       });
     }
-    function fieldLabel(f){ return f.labelI18n ? t(f.labelI18n) : (f.label||''); }
-    function fieldPh(f){ return f.phI18n ? t(f.phI18n) : (f.ph||''); }
     function fieldHtml(f,item,idx){
       const val = (item[f.key]||'').replace(/"/g,'&quot;');
       if(f.type==='textarea'){
-        return '<div style="grid-column:1/-1;"><label>'+fieldLabel(f)+'</label><textarea data-field="'+f.key+'" data-idx="'+idx+'" placeholder="'+fieldPh(f)+'">'+(item[f.key]||'')+'</textarea></div>';
+        return '<div style="grid-column:1/-1;"><label>'+f.label+'</label><textarea data-field="'+f.key+'" data-idx="'+idx+'" placeholder="'+(f.ph||'')+'">'+(item[f.key]||'')+'</textarea></div>';
       }
       if(f.type==='select'){
         const optList = f.optionsI18n ? f.optionsI18n.map(k=>({value:k, label:t(k)})) : (f.options||[]).map(o=>({value:o, label:o}));
@@ -1071,66 +930,65 @@
           const sel = (item[f.key]||'')===o.value ? ' selected' : '';
           return '<option value="'+o.value.replace(/"/g,'&quot;')+'"'+sel+'>'+o.label+'</option>';
         }).join('');
-        const phText = fieldPh(f);
+        const phText = f.phI18n ? t(f.phI18n) : (f.ph||'');
         const placeholderOpt = '<option value="" disabled'+(item[f.key]?'':' selected')+' hidden>'+phText+'</option>';
-        return '<div><label>'+fieldLabel(f)+'</label><select data-field="'+f.key+'" data-idx="'+idx+'">'+placeholderOpt+opts+'</select></div>';
+        return '<div><label>'+f.label+'</label><select data-field="'+f.key+'" data-idx="'+idx+'">'+placeholderOpt+opts+'</select></div>';
       }
-      return '<div><label>'+fieldLabel(f)+'</label><input type="text" data-field="'+f.key+'" data-idx="'+idx+'" value="'+val+'" placeholder="'+fieldPh(f)+'"></div>';
+      return '<div><label>'+f.label+'</label><input type="text" data-field="'+f.key+'" data-idx="'+idx+'" value="'+val+'" placeholder="'+(f.ph||'')+'"></div>';
     }
     document.getElementById(addBtnId).addEventListener('click', addItem);
     renderList();
-    allRepeatableRenders.push(renderList);
     return renderList;
   }
 
   makeRepeatable('competencies-list','add-competency', state.competencies, [
-    {key:'name', labelI18n:'field_competency', phI18n:'ph_competency'}
-  ], 'card_competency');
+    {key:'name', label:'Competency', ph:'e.g. CNC machine operation'}
+  ], 'Competency');
 
   const renderLanguagesList = makeRepeatable('languages-list','add-language', state.languages, [
-    {row:[{key:'name',labelI18n:'field_language',phI18n:'ph_language_name'},{key:'level',labelI18n:'field_proficiency',type:'select',phI18n:'level_select_ph', optionsI18n:['level_basic','level_elementary','level_intermediate','level_upper_intermediate','level_advanced','level_fluent','level_native']}]}
-  ], 'card_language');
+    {row:[{key:'name',label:'Language',ph:'e.g. English'},{key:'level',label:'Proficiency',type:'select',phI18n:'level_select_ph', optionsI18n:['level_basic','level_elementary','level_intermediate','level_upper_intermediate','level_advanced','level_fluent','level_native']}]}
+  ], 'Language');
 
   makeRepeatable('certs-list','add-cert', state.certs, [
-    {key:'name', labelI18n:'field_certification', phI18n:'ph_certification'}
-  ], 'card_certification');
+    {key:'name', label:'Certification', ph:'e.g. CNC Operator Certificate'}
+  ], 'Certification');
 
   makeRepeatable('education-list','add-education', state.education, [
-    {row:[{key:'school',labelI18n:'field_school',phI18n:'ph_school'},{key:'major',labelI18n:'field_major',phI18n:'ph_major'}]},
-    {row:[{key:'start',labelI18n:'field_start_year',phI18n:'ph_start_year'},{key:'end',labelI18n:'field_end_year',phI18n:'ph_end_year'}]},
-    {key:'desc', labelI18n:'field_edu_details', type:'textarea', phI18n:'ph_edu_details'}
-  ], 'card_education');
+    {row:[{key:'school',label:'School / institution',ph:'e.g. SMK Negeri 6 Samarinda'},{key:'major',label:'Major / program',ph:'e.g. Mechanical Engineering'}]},
+    {row:[{key:'start',label:'Start year',ph:'e.g. 2023'},{key:'end',label:'End year',ph:'e.g. 2026'}]},
+    {key:'desc', label:'Details (one point per line)', type:'textarea', ph:'Studied core subjects...\nGained hands-on experience...'}
+  ], 'Education');
 
   makeRepeatable('experience-list','add-experience', state.experience, [
-    {row:[{key:'company',labelI18n:'field_company',phI18n:'ph_company'},{key:'position',labelI18n:'field_position',phI18n:'ph_position'}]},
-    {row:[{key:'start',labelI18n:'field_start_date',phI18n:'ph_start_date'},{key:'end',labelI18n:'field_end_date',phI18n:'ph_end_date'}]},
-    {key:'desc', labelI18n:'field_exp_details', type:'textarea', phI18n:'ph_exp_details'}
-  ], 'card_position');
+    {row:[{key:'company',label:'Company / institution',ph:'e.g. PT Example Manufacturing'},{key:'position',label:'Position / division',ph:'e.g. Production Intern'}]},
+    {row:[{key:'start',label:'Start date',ph:'e.g. Jan 2025'},{key:'end',label:'End date',ph:'e.g. Mar 2025'}]},
+    {key:'desc', label:'Tasks / achievements (one point per line)', type:'textarea', ph:'Operated lathe/CNC machines...\nUsed tools/software...'}
+  ], 'Position');
 
   makeRepeatable('training-list','add-training', state.training, [
-    {key:'name', labelI18n:'field_training', phI18n:'ph_training'}
-  ], 'card_training');
+    {key:'name', label:'Training / workshop', ph:'e.g. Workshop Safety (K3) Training, 2025'}
+  ], 'Training');
 
   makeRepeatable('org-list','add-org', state.org, [
-    {key:'name', labelI18n:'field_activity', phI18n:'ph_activity'}
-  ], 'card_activity');
+    {key:'name', label:'Activity', ph:'e.g. Member of OSIS, 2024'}
+  ], 'Activity');
 
   makeRepeatable('addskills-list','add-addskill', state.addskills, [
-    {key:'name', labelI18n:'field_skill', phI18n:'ph_skill'}
-  ], 'card_skill');
+    {key:'name', label:'Skill', ph:'e.g. Microsoft Excel'}
+  ], 'Skill');
 
   // ---------------- render preview ----------------
   function render(){
     const name = document.getElementById('f-name').value.trim();
     const nameEl = document.getElementById('p-name');
-    nameEl.textContent = name || t('ph_full_name_preview');
+    nameEl.textContent = name || '[Full Name]';
     nameEl.className = name ? '' : 'placeholder';
 
-    document.getElementById('p-role').textContent = document.getElementById('f-role').value.trim() || t('ph_role_preview');
+    document.getElementById('p-role').textContent = document.getElementById('f-role').value.trim() || (state.cvLang==='en' ? 'Target Role' : 'Target Jabatan');
 
-    setField('p-address', document.getElementById('f-address').value.trim(), t('ph_address_preview'));
-    setField('p-phone', document.getElementById('f-phone').value.trim(), t('ph_phone_preview'));
-    setField('p-email', document.getElementById('f-email').value.trim(), t('ph_email_preview'));
+    setField('p-address', document.getElementById('f-address').value.trim(), '[Address]');
+    setField('p-phone', document.getElementById('f-phone').value.trim(), '[Phone number]');
+    setField('p-email', document.getElementById('f-email').value.trim(), '[Email address]');
     const link = document.getElementById('f-link').value.trim();
     document.getElementById('p-link-wrap').style.display = link ? 'flex' : 'none';
     document.getElementById('p-link').textContent = link;
@@ -1156,7 +1014,7 @@
     document.getElementById('p-education').innerHTML = validEdu.map(x=>`
       <div class="entry">
         <div class="entry-header">
-          <span class="entry-title">${esc(x.school)||t('ph_school_preview')}</span>
+          <span class="entry-title">${esc(x.school)||'School / Institution'}</span>
           <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
         </div>
         ${x.major?'<div class="entry-subtitle">'+esc(x.major)+'</div>':''}
@@ -1168,7 +1026,7 @@
     document.getElementById('p-experience').innerHTML = validExp.map(x=>`
       <div class="entry">
         <div class="entry-header">
-          <span class="entry-title">${esc(x.company)||t('ph_company_preview')}</span>
+          <span class="entry-title">${esc(x.company)||'Company / Institution'}</span>
           <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
         </div>
         ${x.position?'<div class="entry-subtitle">'+esc(x.position)+'</div>':''}
@@ -1192,68 +1050,8 @@
     el.className = val ? '' : 'placeholder';
   }
 
-  // ---------------- force-fit CV onto a single, full A4 page for printing/PDF ----------------
-  function fitCvToOnePage(){
-    const page = document.getElementById('cv-page');
-    // measure the CV's natural (unscaled) content height at print width (210mm)
-    page.style.transform = 'none';
-    page.style.position = 'static';
-    page.style.width = '210mm';
-    page.style.maxWidth = '210mm';
-    page.style.height = 'auto';
-    page.style.minHeight = '0';
-    void page.offsetHeight; // force reflow before measuring
-    const contentHeightPx = page.scrollHeight;
-
-    const mmToPx = 96/25.4;
-    const availablePx = 297 * mmToPx; // one A4 page height in CSS px
-    const scale = availablePx / contentHeightPx;
-
-    if(scale >= 1){
-      // content is shorter than one page: stretch it to fill the full paper height
-      // (sidebar/main backgrounds extend edge-to-edge) instead of leaving blank space
-      page.style.transform = 'none';
-      page.style.position = 'static';
-      page.style.height = '297mm';
-      page.style.minHeight = '297mm';
-    } else {
-      // content is longer than one page: shrink it down so it all fits on one page
-      const clampedScale = Math.max(scale, 0.4); // safety floor so text stays legible
-      page.style.height = 'auto';
-      page.style.minHeight = '0';
-      page.style.position = 'absolute';
-      page.style.top = '0';
-      page.style.left = '0';
-      page.style.transform = 'scale(' + clampedScale + ')';
-    }
-  }
-  function resetCvScale(){
-    const page = document.getElementById('cv-page');
-    page.style.transform = '';
-    page.style.position = '';
-    page.style.height = '';
-    page.style.minHeight = '';
-    page.style.width = '';
-    page.style.maxWidth = '';
-  }
-  window.addEventListener('beforeprint', fitCvToOnePage);
-  window.addEventListener('afterprint', resetCvScale);
-  // Fallbacks: some mobile browsers (Chrome/Android, iOS Safari share-sheet) don't
-  // reliably fire beforeprint/afterprint before opening their native print/PDF UI,
-  // so we also apply the fit synchronously right when the button is pressed, and
-  // reset again when the tab regains focus/visibility (i.e. user returned from
-  // the print sheet) as a safety net.
-  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) resetCvScale(); });
-  window.addEventListener('focus', resetCvScale);
-
-  function triggerPrint(){
-    fitCvToOnePage();
-    // give mobile browsers a tick to apply the layout change before the native
-    // print/share sheet captures the page
-    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ window.print(); }); });
-  }
-  document.getElementById('download-btn').addEventListener('click', triggerPrint);
-  document.getElementById('download-btn-step').addEventListener('click', triggerPrint);
+  document.getElementById('download-btn').addEventListener('click', ()=>window.print());
+  document.getElementById('download-btn-step').addEventListener('click', ()=>window.print());
   document.getElementById('clear-all-btn').addEventListener('click', ()=>{
     const msg = state.cvLang==='en' ? 'Clear everything and start over?' : 'Hapus semua dan mulai dari awal?';
     if(!confirm(msg)) return;
@@ -1342,28 +1140,21 @@
     });
   }
 
-  // ---------------- splash gate: exactly 6 taps within a 2-second window ----------------
+  // ---------------- splash gate: triple-tap within 1 second ----------------
   (function(){
     const gate = document.getElementById('splash-gate');
     const appRoot = document.getElementById('app-root');
-    const REQUIRED_TAPS = 6;
-    const WINDOW_MS = 2000;
-    let tapCount = 0;
-    let windowTimer = null;
+    let tapTimes = [];
     function unlock(){
       gate.classList.add('fading');
       setTimeout(()=>{ gate.classList.add('hidden'); }, 650);
       appRoot.classList.add('app-ready');
     }
     gate.addEventListener('click', ()=>{
-      tapCount++;
-      if(tapCount === 1){
-        windowTimer = setTimeout(()=>{
-          if(tapCount === REQUIRED_TAPS){ unlock(); }
-          tapCount = 0;
-          windowTimer = null;
-        }, WINDOW_MS);
-      }
+      const now = Date.now();
+      tapTimes.push(now);
+      tapTimes = tapTimes.filter(tm => now - tm <= 1000);
+      if(tapTimes.length >= 3){ unlock(); }
     });
   })();
 
