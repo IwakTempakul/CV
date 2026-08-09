@@ -147,7 +147,7 @@
     box-shadow:0 0 0 1px #d8d4c4;flex-shrink:0;
   }
   .color-swatch.active{border-color:#fff;box-shadow:0 0 0 2px #3b3222;}
-  .color-swatch-wrap{display:grid;grid-template-columns:repeat(auto-fill,24px);gap:8px;align-items:center;margin-top:8px;max-width:280px;}
+  .color-swatch-wrap{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;align-items:center;margin-top:8px;max-width:280px;}
   .custom-color-wrap{display:flex;align-items:center;gap:8px;margin-top:10px;}
   .custom-color-wrap input[type=color]{width:34px;height:28px;padding:0;border:1px solid #d8d4c4;border-radius:4px;cursor:pointer;background:#fff;}
   .custom-color-wrap label{margin:0;}
@@ -202,7 +202,6 @@
     display:flex;flex-direction:column;align-items:center;
   }
   .preview-toolbar{width:100%;max-width:850px;display:flex;justify-content:flex-end;gap:10px;margin-bottom:16px;}
-  .cv-scale-wrap{width:100%;display:flex;justify-content:center;}
 
   /* ---- replicated CV template ---- */
   .cv-container{
@@ -301,55 +300,6 @@
   .app.app-ready{ display:grid; }
 
   @media (max-width:1000px){ .app{grid-template-columns:1fr;} .form-side,.preview-side{max-height:none;} }
-
-  /* ============ MOBILE PORTRAIT OPTIMIZATION ============ */
-  @media (max-width:640px){
-    .form-side{padding:18px 16px 22px;}
-    .preview-side{padding:16px 12px 40px;}
-    h1.title{font-size:19px;}
-    .subtitle{font-size:12px;margin-bottom:14px;}
-    .step-question{font-size:17px;}
-    .step-help{font-size:12px;margin-bottom:14px;}
-
-    /* Forms: stack two-column rows on narrow screens */
-    .row2{grid-template-columns:1fr;gap:0;}
-
-    /* Option pickers: allow comfortable wrapping instead of forced min-width overflow */
-    .template-option{min-width:calc(50% - 4px);flex:1 1 calc(50% - 4px);}
-    .shape-option{min-width:calc(33.333% - 6px);flex:1 1 calc(33.333% - 6px);}
-    .font-option-row{grid-template-columns:1fr;max-height:240px;}
-    .color-swatch-wrap{max-width:100%;}
-    .custom-color-wrap{flex-wrap:wrap;}
-    .custom-color-wrap #custom-color-hex{flex:0 1 88px;}
-    .custom-color-wrap #rgb-wrap{flex:1 1 100%;}
-    .custom-color-wrap #rgb-wrap input{flex:1;min-width:0;}
-    .lang-option{padding:12px 6px;}
-
-    /* Wizard progress + dots */
-    .wizard-progress-label{font-size:10.5px;}
-    .wizard-dots{gap:4px;}
-    .wizard-dot{width:8px;height:8px;}
-
-    /* Bottom nav: keep buttons reachable with thumb, avoid squeezing */
-    .wizard-nav{flex-wrap:wrap;padding-top:16px;}
-    .wizard-nav .btn{padding:10px 14px;font-size:13px;}
-    .wizard-nav .spacer{flex-basis:100%;order:1;height:0;}
-    #btn-back{order:2;}
-    .skip-link{order:3;font-size:12px;}
-    #btn-next{order:4;flex:1;}
-    #download-btn-step{order:4;flex:1;}
-
-    /* Photo upload row wraps cleanly */
-    .photo-upload{flex-wrap:wrap;gap:10px;}
-
-    /* Preview toolbar */
-    .preview-toolbar{justify-content:center;margin-bottom:12px;}
-    .preview-toolbar .btn{width:100%;text-align:center;}
-
-    /* Scale the fixed-width CV sheet down to fit the viewport, no horizontal scroll */
-    .cv-scale-wrap{overflow:visible;}
-  }
-
   @media print{
     @page{ margin:0; size:A4; }
     *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
@@ -450,12 +400,6 @@
       <div class="custom-color-wrap">
         <label style="margin:0;" data-i18n="label_custom">Kustom:</label>
         <input type="color" id="custom-color-input" value="#3b3222">
-        <input type="text" id="custom-color-hex" value="#3b3222" maxlength="7" placeholder="#RRGGBB" style="width:88px;font-family:'Inter',Arial,sans-serif;font-size:12.5px;padding:6px 8px;border:1px solid #d8d4c4;border-radius:4px;background:#fff;color:#2b2b28;text-transform:uppercase;">
-        <div class="rgb-wrap" id="rgb-wrap" style="display:flex;align-items:center;gap:4px;">
-          <input type="number" id="rgb-r" min="0" max="255" value="59" title="Red" style="width:48px;font-family:'Inter',Arial,sans-serif;font-size:12.5px;padding:6px 5px;border:1px solid #d8d4c4;border-radius:4px;background:#fff;color:#2b2b28;">
-          <input type="number" id="rgb-g" min="0" max="255" value="50" title="Green" style="width:48px;font-family:'Inter',Arial,sans-serif;font-size:12.5px;padding:6px 5px;border:1px solid #d8d4c4;border-radius:4px;background:#fff;color:#2b2b28;">
-          <input type="number" id="rgb-b" min="0" max="255" value="34" title="Blue" style="width:48px;font-family:'Inter',Arial,sans-serif;font-size:12.5px;padding:6px 5px;border:1px solid #d8d4c4;border-radius:4px;background:#fff;color:#2b2b28;">
-        </div>
       </div>
 
       <label style="margin-top:18px;" data-i18n="label_font">Font CV</label>
@@ -612,7 +556,6 @@
       <button class="btn btn-primary" id="download-btn" type="button" data-i18n="btn_download">⬇ Unduh PDF</button>
     </div>
 
-    <div class="cv-scale-wrap" id="cv-scale-wrap">
     <div class="cv-container" id="cv-page">
       <div class="sidebar">
         <div class="photo-box shape-square" id="p-photo-box"><span data-i18n="photo_ph_short">Foto</span></div>
@@ -680,13 +623,10 @@
         </section>
       </div>
     </div>
-    </div>
   </div>
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function(){
   const state = { photo:null, competencies:[], languages:[], certs:[], education:[], experience:[], training:[], org:[], addskills:[],
@@ -726,26 +666,7 @@
       progress_step:'Langkah', progress_of:'dari',
       review_edit:'Edit', review_filled:'Terisi', review_empty:'Kosong',
       review_names:['Bahasa CV','Tampilan & warna','Foto','Informasi pribadi','Profil singkat','Ringkasan profesional','Kompetensi utama','Bahasa yang dikuasai','Sertifikasi','Pendidikan','Pengalaman kerja/magang','Pelatihan & workshop','Pengalaman organisasi','Keterampilan tambahan'],
-      level_select_ph:'Pilih tingkat', level_basic:'Dasar', level_elementary:'Pemula', level_intermediate:'Menengah', level_upper_intermediate:'Menengah Atas', level_advanced:'Mahir', level_fluent:'Fasih', level_native:'Bahasa Ibu',
-      btn_remove:'Hapus',
-      card_competency:'Kompetensi', card_language:'Bahasa', card_certification:'Sertifikasi', card_education:'Pendidikan', card_experience:'Posisi', card_training:'Pelatihan', card_org:'Kegiatan', card_addskill:'Keterampilan',
-      field_competency:'Kompetensi', ph_competency:'mis. Pengoperasian mesin CNC',
-      field_language:'Bahasa', ph_language:'mis. Bahasa Inggris',
-      field_proficiency:'Tingkat kemahiran',
-      field_certification:'Sertifikasi', ph_certification:'mis. Sertifikat Operator CNC',
-      field_school:'Sekolah / institusi', ph_school:'mis. SMK Negeri 6 Samarinda',
-      field_major:'Jurusan / program', ph_major:'mis. Teknik Mesin',
-      field_start_year:'Tahun mulai', ph_start_year:'mis. 2023',
-      field_end_year:'Tahun selesai', ph_end_year:'mis. 2026',
-      field_edu_desc:'Detail (satu poin per baris)', ph_edu_desc:'Mempelajari mata pelajaran inti...\nMemperoleh pengalaman praktik langsung...',
-      field_company:'Perusahaan / institusi', ph_company:'mis. PT Contoh Manufaktur',
-      field_position:'Posisi / divisi', ph_position:'mis. Magang Produksi',
-      field_start_date:'Tanggal mulai', ph_start_date:'mis. Jan 2025',
-      field_end_date:'Tanggal selesai', ph_end_date:'mis. Mar 2025',
-      field_exp_desc:'Tugas / pencapaian (satu poin per baris)', ph_exp_desc:'Mengoperasikan mesin bubut/CNC...\nMenggunakan alat/software...',
-      field_training:'Pelatihan / workshop', ph_training:'mis. Pelatihan K3, 2025',
-      field_org:'Kegiatan', ph_org:'mis. Anggota OSIS, 2024',
-      field_addskill:'Keterampilan', ph_addskill:'mis. Microsoft Excel'
+      level_select_ph:'Pilih tingkat', level_basic:'Dasar', level_elementary:'Pemula', level_intermediate:'Menengah', level_upper_intermediate:'Menengah Atas', level_advanced:'Mahir', level_fluent:'Fasih', level_native:'Bahasa Ibu'
     },
     en: {
       app_title:'Step-by-Step Wizard',
@@ -775,26 +696,7 @@
       progress_step:'Step', progress_of:'of',
       review_edit:'Edit', review_filled:'Filled', review_empty:'Empty',
       review_names:['CV language','Look & color','Photo','Personal information','Short profile','Professional summary','Core competencies','Languages','Certifications','Education','Work/internship experience','Training & workshops','Organizational experience','Additional skills'],
-      level_select_ph:'Select level', level_basic:'Basic', level_elementary:'Elementary', level_intermediate:'Intermediate', level_upper_intermediate:'Upper Intermediate', level_advanced:'Advanced', level_fluent:'Fluent', level_native:'Native',
-      btn_remove:'Remove',
-      card_competency:'Competency', card_language:'Language', card_certification:'Certification', card_education:'Education', card_experience:'Position', card_training:'Training', card_org:'Activity', card_addskill:'Skill',
-      field_competency:'Competency', ph_competency:'e.g. CNC machine operation',
-      field_language:'Language', ph_language:'e.g. English',
-      field_proficiency:'Proficiency',
-      field_certification:'Certification', ph_certification:'e.g. CNC Operator Certificate',
-      field_school:'School / institution', ph_school:'e.g. SMK Negeri 6 Samarinda',
-      field_major:'Major / program', ph_major:'e.g. Mechanical Engineering',
-      field_start_year:'Start year', ph_start_year:'e.g. 2023',
-      field_end_year:'End year', ph_end_year:'e.g. 2026',
-      field_edu_desc:'Details (one point per line)', ph_edu_desc:'Studied core subjects...\nGained hands-on experience...',
-      field_company:'Company / institution', ph_company:'e.g. PT Example Manufacturing',
-      field_position:'Position / division', ph_position:'e.g. Production Intern',
-      field_start_date:'Start date', ph_start_date:'e.g. Jan 2025',
-      field_end_date:'End date', ph_end_date:'e.g. Mar 2025',
-      field_exp_desc:'Tasks / achievements (one point per line)', ph_exp_desc:'Operated lathe/CNC machines...\nUsed tools/software...',
-      field_training:'Training / workshop', ph_training:'e.g. Workshop Safety (K3) Training, 2025',
-      field_org:'Activity', ph_org:'e.g. Member of OSIS, 2024',
-      field_addskill:'Skill', ph_addskill:'e.g. Microsoft Excel'
+      level_select_ph:'Select level', level_basic:'Basic', level_elementary:'Elementary', level_intermediate:'Intermediate', level_upper_intermediate:'Upper Intermediate', level_advanced:'Advanced', level_fluent:'Fluent', level_native:'Native'
     }
   };
   function t(key){ return (I18N[state.cvLang] && I18N[state.cvLang][key]) || I18N.id[key] || key; }
@@ -806,14 +708,7 @@
     document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active', o.dataset.lang===state.cvLang));
     updateProgress();
     renderReview();
-    if(typeof renderCompetenciesList === 'function'){ renderCompetenciesList(); }
     if(typeof renderLanguagesList === 'function'){ renderLanguagesList(); }
-    if(typeof renderCertsList === 'function'){ renderCertsList(); }
-    if(typeof renderEducationList === 'function'){ renderEducationList(); }
-    if(typeof renderExperienceList === 'function'){ renderExperienceList(); }
-    if(typeof renderTrainingList === 'function'){ renderTrainingList(); }
-    if(typeof renderOrgList === 'function'){ renderOrgList(); }
-    if(typeof renderAddskillsList === 'function'){ renderAddskillsList(); }
     render();
   }
 
@@ -962,8 +857,6 @@
       state.sidebarColor = sw.dataset.color;
       state.sidebarAccent = sw.dataset.accent;
       document.getElementById('custom-color-input').value = sw.dataset.color;
-      document.getElementById('custom-color-hex').value = sw.dataset.color;
-      syncRgbFromHex(sw.dataset.color);
       applyDesign();
     });
   });
@@ -971,60 +864,8 @@
     document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
     state.sidebarColor = e.target.value;
     state.sidebarAccent = isLight(e.target.value) ? '#8a6d22' : '#d3a75c';
-    document.getElementById('custom-color-hex').value = e.target.value;
-    syncRgbFromHex(e.target.value);
     applyDesign();
   });
-  const hexInput = document.getElementById('custom-color-hex');
-  const rgbR = document.getElementById('rgb-r'), rgbG = document.getElementById('rgb-g'), rgbB = document.getElementById('rgb-b');
-  function hexToRgb(hex){
-    const m = /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/.exec(hex);
-    if(!m) return null;
-    return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) };
-  }
-  function rgbToHex(r,g,b){
-    const c = v => Math.max(0,Math.min(255, Math.round(v||0))).toString(16).padStart(2,'0');
-    return '#'+c(r)+c(g)+c(b);
-  }
-  function syncRgbFromHex(hex){
-    const rgb = hexToRgb(hex);
-    if(!rgb) return;
-    rgbR.value = rgb.r; rgbG.value = rgb.g; rgbB.value = rgb.b;
-  }
-  function applyHexIfValid(val){
-    if(/^#[0-9a-fA-F]{6}$/.test(val)){
-      document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
-      state.sidebarColor = val;
-      state.sidebarAccent = isLight(val) ? '#8a6d22' : '#d3a75c';
-      document.getElementById('custom-color-input').value = val;
-      syncRgbFromHex(val);
-      applyDesign();
-    }
-  }
-  hexInput.addEventListener('input', (e)=>{
-    let v = e.target.value.trim();
-    if(v && v[0] !== '#') v = '#' + v;
-    applyHexIfValid(v);
-  });
-  hexInput.addEventListener('blur', (e)=>{
-    e.target.value = document.getElementById('custom-color-input').value;
-  });
-  function applyRgbInputs(){
-    const hex = rgbToHex(rgbR.value, rgbG.value, rgbB.value);
-    document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
-    state.sidebarColor = hex;
-    state.sidebarAccent = isLight(hex) ? '#8a6d22' : '#d3a75c';
-    document.getElementById('custom-color-input').value = hex;
-    document.getElementById('custom-color-hex').value = hex;
-    applyDesign();
-  }
-  [rgbR, rgbG, rgbB].forEach(inp=>{
-    inp.addEventListener('input', ()=>{
-      inp.value = Math.max(0, Math.min(255, +inp.value || 0));
-      applyRgbInputs();
-    });
-  });
-  syncRgbFromHex(document.getElementById('custom-color-input').value);
 
   // ---------------- photo ----------------
   const photoInput = document.getElementById('photo-input');
@@ -1058,10 +899,9 @@
     function renderList(){
       const container = document.getElementById(containerId);
       container.innerHTML = '';
-      const cardLabelText = t(cardLabelKey);
       arr.forEach((item, idx)=>{
         const card = document.createElement('div'); card.className='item-card';
-        let html = '<div class="item-card-head"><span class="item-card-label">'+cardLabelText+' '+(idx+1)+'</span><span class="btn-remove" data-idx="'+idx+'">'+ t('btn_remove') +'</span></div>';
+        let html = '<div class="item-card-head"><span class="item-card-label">'+cardLabelKey+' '+(idx+1)+'</span><span class="btn-remove" data-idx="'+idx+'">'+ (state.cvLang==='en'?'Remove':'Hapus') +'</span></div>';
         fieldsDef.forEach(f=>{
           if(f.row){
             html += '<div class="row2">';
@@ -1081,10 +921,8 @@
     }
     function fieldHtml(f,item,idx){
       const val = (item[f.key]||'').replace(/"/g,'&quot;');
-      const labelText = f.labelI18n ? t(f.labelI18n) : (f.label||'');
-      const phText0 = f.phI18n && f.type!=='select' ? t(f.phI18n) : (f.ph||'');
       if(f.type==='textarea'){
-        return '<div style="grid-column:1/-1;"><label>'+labelText+'</label><textarea data-field="'+f.key+'" data-idx="'+idx+'" placeholder="'+phText0+'">'+(item[f.key]||'')+'</textarea></div>';
+        return '<div style="grid-column:1/-1;"><label>'+f.label+'</label><textarea data-field="'+f.key+'" data-idx="'+idx+'" placeholder="'+(f.ph||'')+'">'+(item[f.key]||'')+'</textarea></div>';
       }
       if(f.type==='select'){
         const optList = f.optionsI18n ? f.optionsI18n.map(k=>({value:k, label:t(k)})) : (f.options||[]).map(o=>({value:o, label:o}));
@@ -1094,50 +932,50 @@
         }).join('');
         const phText = f.phI18n ? t(f.phI18n) : (f.ph||'');
         const placeholderOpt = '<option value="" disabled'+(item[f.key]?'':' selected')+' hidden>'+phText+'</option>';
-        return '<div><label>'+labelText+'</label><select data-field="'+f.key+'" data-idx="'+idx+'">'+placeholderOpt+opts+'</select></div>';
+        return '<div><label>'+f.label+'</label><select data-field="'+f.key+'" data-idx="'+idx+'">'+placeholderOpt+opts+'</select></div>';
       }
-      return '<div><label>'+labelText+'</label><input type="text" data-field="'+f.key+'" data-idx="'+idx+'" value="'+val+'" placeholder="'+phText0+'"></div>';
+      return '<div><label>'+f.label+'</label><input type="text" data-field="'+f.key+'" data-idx="'+idx+'" value="'+val+'" placeholder="'+(f.ph||'')+'"></div>';
     }
     document.getElementById(addBtnId).addEventListener('click', addItem);
     renderList();
     return renderList;
   }
 
-  const renderCompetenciesList = makeRepeatable('competencies-list','add-competency', state.competencies, [
-    {key:'name', labelI18n:'field_competency', phI18n:'ph_competency'}
-  ], 'card_competency');
+  makeRepeatable('competencies-list','add-competency', state.competencies, [
+    {key:'name', label:'Competency', ph:'e.g. CNC machine operation'}
+  ], 'Competency');
 
   const renderLanguagesList = makeRepeatable('languages-list','add-language', state.languages, [
-    {row:[{key:'name',labelI18n:'field_language',phI18n:'ph_language'},{key:'level',labelI18n:'field_proficiency',type:'select',phI18n:'level_select_ph', optionsI18n:['level_basic','level_elementary','level_intermediate','level_upper_intermediate','level_advanced','level_fluent','level_native']}]}
-  ], 'card_language');
+    {row:[{key:'name',label:'Language',ph:'e.g. English'},{key:'level',label:'Proficiency',type:'select',phI18n:'level_select_ph', optionsI18n:['level_basic','level_elementary','level_intermediate','level_upper_intermediate','level_advanced','level_fluent','level_native']}]}
+  ], 'Language');
 
-  const renderCertsList = makeRepeatable('certs-list','add-cert', state.certs, [
-    {key:'name', labelI18n:'field_certification', phI18n:'ph_certification'}
-  ], 'card_certification');
+  makeRepeatable('certs-list','add-cert', state.certs, [
+    {key:'name', label:'Certification', ph:'e.g. CNC Operator Certificate'}
+  ], 'Certification');
 
-  const renderEducationList = makeRepeatable('education-list','add-education', state.education, [
-    {row:[{key:'school',labelI18n:'field_school',phI18n:'ph_school'},{key:'major',labelI18n:'field_major',phI18n:'ph_major'}]},
-    {row:[{key:'start',labelI18n:'field_start_year',phI18n:'ph_start_year'},{key:'end',labelI18n:'field_end_year',phI18n:'ph_end_year'}]},
-    {key:'desc', labelI18n:'field_edu_desc', type:'textarea', phI18n:'ph_edu_desc'}
-  ], 'card_education');
+  makeRepeatable('education-list','add-education', state.education, [
+    {row:[{key:'school',label:'School / institution',ph:'e.g. SMK Negeri 6 Samarinda'},{key:'major',label:'Major / program',ph:'e.g. Mechanical Engineering'}]},
+    {row:[{key:'start',label:'Start year',ph:'e.g. 2023'},{key:'end',label:'End year',ph:'e.g. 2026'}]},
+    {key:'desc', label:'Details (one point per line)', type:'textarea', ph:'Studied core subjects...\nGained hands-on experience...'}
+  ], 'Education');
 
-  const renderExperienceList = makeRepeatable('experience-list','add-experience', state.experience, [
-    {row:[{key:'company',labelI18n:'field_company',phI18n:'ph_company'},{key:'position',labelI18n:'field_position',phI18n:'ph_position'}]},
-    {row:[{key:'start',labelI18n:'field_start_date',phI18n:'ph_start_date'},{key:'end',labelI18n:'field_end_date',phI18n:'ph_end_date'}]},
-    {key:'desc', labelI18n:'field_exp_desc', type:'textarea', phI18n:'ph_exp_desc'}
-  ], 'card_experience');
+  makeRepeatable('experience-list','add-experience', state.experience, [
+    {row:[{key:'company',label:'Company / institution',ph:'e.g. PT Example Manufacturing'},{key:'position',label:'Position / division',ph:'e.g. Production Intern'}]},
+    {row:[{key:'start',label:'Start date',ph:'e.g. Jan 2025'},{key:'end',label:'End date',ph:'e.g. Mar 2025'}]},
+    {key:'desc', label:'Tasks / achievements (one point per line)', type:'textarea', ph:'Operated lathe/CNC machines...\nUsed tools/software...'}
+  ], 'Position');
 
-  const renderTrainingList = makeRepeatable('training-list','add-training', state.training, [
-    {key:'name', labelI18n:'field_training', phI18n:'ph_training'}
-  ], 'card_training');
+  makeRepeatable('training-list','add-training', state.training, [
+    {key:'name', label:'Training / workshop', ph:'e.g. Workshop Safety (K3) Training, 2025'}
+  ], 'Training');
 
-  const renderOrgList = makeRepeatable('org-list','add-org', state.org, [
-    {key:'name', labelI18n:'field_org', phI18n:'ph_org'}
-  ], 'card_org');
+  makeRepeatable('org-list','add-org', state.org, [
+    {key:'name', label:'Activity', ph:'e.g. Member of OSIS, 2024'}
+  ], 'Activity');
 
-  const renderAddskillsList = makeRepeatable('addskills-list','add-addskill', state.addskills, [
-    {key:'name', labelI18n:'field_addskill', phI18n:'ph_addskill'}
-  ], 'card_addskill');
+  makeRepeatable('addskills-list','add-addskill', state.addskills, [
+    {key:'name', label:'Skill', ph:'e.g. Microsoft Excel'}
+  ], 'Skill');
 
   // ---------------- render preview ----------------
   function render(){
@@ -1176,7 +1014,7 @@
     document.getElementById('p-education').innerHTML = validEdu.map(x=>`
       <div class="entry">
         <div class="entry-header">
-          <span class="entry-title">${esc(x.school)||t('field_school')}</span>
+          <span class="entry-title">${esc(x.school)||'School / Institution'}</span>
           <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
         </div>
         ${x.major?'<div class="entry-subtitle">'+esc(x.major)+'</div>':''}
@@ -1188,7 +1026,7 @@
     document.getElementById('p-experience').innerHTML = validExp.map(x=>`
       <div class="entry">
         <div class="entry-header">
-          <span class="entry-title">${esc(x.company)||t('field_company')}</span>
+          <span class="entry-title">${esc(x.company)||'Company / Institution'}</span>
           <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
         </div>
         ${x.position?'<div class="entry-subtitle">'+esc(x.position)+'</div>':''}
@@ -1212,107 +1050,8 @@
     el.className = val ? '' : 'placeholder';
   }
 
-  // ---------------- download as true A4 PDF (consistent on desktop & mobile) ----------------
-  async function downloadCvAsPdf(btn){
-    const page = document.getElementById('cv-page');
-    if(!window.html2canvas || !window.jspdf){ window.print(); return; }
-    const originalText = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = (state.cvLang==='en') ? 'Preparing PDF…' : 'Menyiapkan PDF…';
-
-    // Build an isolated, offscreen clone at full fixed width (850px), completely detached
-    // from the mobile scaling wrapper / scrollable ancestors / responsive media queries
-    // that were causing the sidebar to render shifted on phones.
-    // IMPORTANT: use position:absolute + fully opaque (not opacity:0 / position:fixed) —
-    // some mobile browsers fail to paint grid layouts inside opacity:0/fixed ancestors,
-    // which was cutting the main (white) column out of the capture entirely.
-    const clone = page.cloneNode(true);
-    clone.id = 'cv-page-pdf-clone';
-    clone.style.transform = 'none';
-    clone.style.margin = '0';
-    clone.style.boxShadow = 'none';
-    clone.style.width = page.offsetWidth + 'px';
-
-    const captureHost = document.createElement('div');
-    captureHost.style.position = 'absolute';
-    captureHost.style.top = '0';
-    captureHost.style.left = '-10000px';
-    captureHost.style.pointerEvents = 'none';
-    captureHost.style.background = '#ffffff';
-    captureHost.appendChild(clone);
-    document.body.appendChild(captureHost);
-
-    // force a layout flush and wait a frame so the grid/fonts/images in the clone
-    // are fully measured before html2canvas reads its dimensions
-    void clone.offsetHeight;
-    await new Promise(res => requestAnimationFrame(()=>requestAnimationFrame(res)));
-
-    try{
-      let canvas = await window.html2canvas(clone, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        windowWidth: clone.scrollWidth,
-        windowHeight: clone.scrollHeight
-      });
-
-      // Safety net: if the clone capture looks wrong (e.g. only the ~280px sidebar
-      // got painted instead of the full ~850px two-column layout), fall back to
-      // capturing the live, on-screen element directly.
-      const expectedWidthPx = clone.scrollWidth * 2; // scale:2
-      if(canvas.width < expectedWidthPx * 0.7){
-        const prevTransform = page.style.transform;
-        const prevTransformOrigin = page.style.transformOrigin;
-        const prevBoxShadow = page.style.boxShadow;
-        page.style.transform = 'none';
-        page.style.transformOrigin = 'top left';
-        page.style.boxShadow = 'none';
-        void page.offsetHeight;
-        await new Promise(res => requestAnimationFrame(()=>requestAnimationFrame(res)));
-        try{
-          canvas = await window.html2canvas(page, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#ffffff',
-            windowWidth: page.scrollWidth,
-            windowHeight: page.scrollHeight
-          });
-        } finally {
-          page.style.transform = prevTransform;
-          page.style.transformOrigin = prevTransformOrigin;
-          page.style.boxShadow = prevBoxShadow;
-          if(window.__applyCvScale) window.__applyCvScale();
-        }
-      }
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-      const pageWidthMm = 210, pageHeightMm = 297;
-      const fullWidthImgHeightMm = (canvas.height * pageWidthMm) / canvas.width;
-      let imgWidthMm = pageWidthMm, imgHeightMm = fullWidthImgHeightMm, offsetX = 0, offsetY = 0;
-      if(fullWidthImgHeightMm > pageHeightMm){
-        // content is taller than one A4 page: scale down to fit height, keep it on a single page
-        const fitScale = pageHeightMm / fullWidthImgHeightMm;
-        imgHeightMm = pageHeightMm;
-        imgWidthMm = pageWidthMm * fitScale;
-        offsetX = (pageWidthMm - imgWidthMm) / 2;
-      } else {
-        // content is shorter than one A4 page: center it vertically for a balanced look
-        offsetY = (pageHeightMm - fullWidthImgHeightMm) / 2;
-      }
-      pdf.addImage(imgData, 'JPEG', offsetX, offsetY, imgWidthMm, imgHeightMm);
-      pdf.save('CV.pdf');
-    }catch(err){
-      console.error('PDF generation failed, falling back to print dialog', err);
-      window.print();
-    }finally{
-      document.body.removeChild(captureHost);
-      btn.disabled = false;
-      btn.textContent = originalText;
-    }
-  }
-  document.getElementById('download-btn').addEventListener('click', (e)=>downloadCvAsPdf(e.currentTarget));
-  document.getElementById('download-btn-step').addEventListener('click', (e)=>downloadCvAsPdf(e.currentTarget));
+  document.getElementById('download-btn').addEventListener('click', ()=>window.print());
+  document.getElementById('download-btn-step').addEventListener('click', ()=>window.print());
   document.getElementById('clear-all-btn').addEventListener('click', ()=>{
     const msg = state.cvLang==='en' ? 'Clear everything and start over?' : 'Hapus semua dan mulai dari awal?';
     if(!confirm(msg)) return;
@@ -1401,55 +1140,28 @@
     });
   }
 
-  // ---------------- splash gate: exactly 6 taps within a 1.5s window ----------------
+  // ---------------- splash gate: triple-tap within 1 second ----------------
   (function(){
     const gate = document.getElementById('splash-gate');
     const appRoot = document.getElementById('app-root');
-    let tapCount = 0;
-    let windowTimer = null;
+    let tapTimes = [];
     function unlock(){
       gate.classList.add('fading');
       setTimeout(()=>{ gate.classList.add('hidden'); }, 650);
       appRoot.classList.add('app-ready');
-      setTimeout(()=>{ if(window.__applyCvScale) window.__applyCvScale(); }, 100);
     }
     gate.addEventListener('click', ()=>{
-      tapCount++;
-      if(windowTimer === null){
-        // first tap of a new attempt: start the 1.5s window, evaluate only when it ends
-        windowTimer = setTimeout(()=>{
-          if(tapCount === 6){ unlock(); }
-          tapCount = 0;
-          windowTimer = null;
-        }, 1500);
-      }
+      const now = Date.now();
+      tapTimes.push(now);
+      tapTimes = tapTimes.filter(tm => now - tm <= 1000);
+      if(tapTimes.length >= 3){ unlock(); }
     });
-  })();
-
-  // ---------------- responsive scaling of CV preview on narrow screens ----------------
-  (function(){
-    const wrap = document.getElementById('cv-scale-wrap');
-    const page = document.getElementById('cv-page');
-    if(!wrap || !page) return;
-    function applyScale(){
-      const availableWidth = wrap.parentElement.clientWidth;
-      const scale = Math.min(1, availableWidth / page.offsetWidth);
-      page.style.transform = 'scale(' + scale + ')';
-      page.style.transformOrigin = 'top center';
-      wrap.style.height = (page.offsetHeight * scale) + 'px';
-    }
-    window.addEventListener('resize', applyScale);
-    window.addEventListener('orientationchange', ()=>setTimeout(applyScale, 150));
-    if(window.ResizeObserver){ new ResizeObserver(applyScale).observe(page); }
-    window.__applyCvScale = applyScale;
-    setTimeout(applyScale, 50);
   })();
 
   // ---------------- init ----------------
   applyDesign();
   applyLanguage();
   goToStep(0);
-  if(window.__applyCvScale) setTimeout(window.__applyCvScale, 100);
 })();
 </script>
 </body>
