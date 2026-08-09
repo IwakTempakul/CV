@@ -1190,17 +1190,19 @@
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
       const pageWidthMm = 210, pageHeightMm = 297;
-      const imgHeightMm = (canvas.height * pageWidthMm) / canvas.width;
-      let heightLeft = imgHeightMm;
-      let position = 0;
-      pdf.addImage(imgData, 'JPEG', 0, position, pageWidthMm, imgHeightMm);
-      heightLeft -= pageHeightMm;
-      while(heightLeft > 0){
-        position = heightLeft - imgHeightMm;
-        pdf.addPage('a4', 'portrait');
-        pdf.addImage(imgData, 'JPEG', 0, position, pageWidthMm, imgHeightMm);
-        heightLeft -= pageHeightMm;
+      const fullWidthImgHeightMm = (canvas.height * pageWidthMm) / canvas.width;
+      let imgWidthMm = pageWidthMm, imgHeightMm = fullWidthImgHeightMm, offsetX = 0, offsetY = 0;
+      if(fullWidthImgHeightMm > pageHeightMm){
+        // content is taller than one A4 page: scale down to fit height, keep it on a single page
+        const fitScale = pageHeightMm / fullWidthImgHeightMm;
+        imgHeightMm = pageHeightMm;
+        imgWidthMm = pageWidthMm * fitScale;
+        offsetX = (pageWidthMm - imgWidthMm) / 2;
+      } else {
+        // content is shorter than one A4 page: center it vertically for a balanced look
+        offsetY = (pageHeightMm - fullWidthImgHeightMm) / 2;
       }
+      pdf.addImage(imgData, 'JPEG', offsetX, offsetY, imgWidthMm, imgHeightMm);
       pdf.save('CV.pdf');
     }catch(err){
       console.error('PDF generation failed, falling back to print dialog', err);
