@@ -694,6 +694,26 @@
   const TOTAL_STEPS = 15;
   function uid(){ return 'id' + Math.random().toString(36).slice(2,9); }
   function esc(s){ return (s||'').toString(); }
+  const MONTH_ABBR = {
+    id: ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'],
+    en: ['January','February','March','April','May','June','July','August','September','October','November','December']
+  };
+  // Converts a value coming from <input type="month"> (format "YYYY-MM") into
+  // a human-readable label for the CV preview/PDF/PNG. mode:'year' -> "2023",
+  // mode:'monthyear' -> "Jan 2023". Anything not matching YYYY-MM (e.g. old
+  // free-text data typed before this field became a calendar picker) is
+  // shown as-is so existing data never breaks.
+  function formatMonthValue(value, mode){
+    if(!value) return '';
+    const m = /^(\d{4})-(\d{2})$/.exec(value);
+    if(!m) return value; // legacy free-text value, show unchanged
+    const year = m[1];
+    if(mode === 'year') return year;
+    const monthIdx = parseInt(m[2], 10) - 1;
+    const names = MONTH_ABBR[state.cvLang] || MONTH_ABBR.id;
+    const name = names[monthIdx] || '';
+    return (name ? name + ' ' : '') + year;
+  }
 
   // ---------------- i18n ----------------
   const I18N = {
@@ -812,6 +832,7 @@
   };
   function t(key){ return (I18N[state.cvLang] && I18N[state.cvLang][key]) || I18N.id[key] || key; }
   function applyLanguage(){
+    document.documentElement.lang = state.cvLang;
     document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
     document.querySelectorAll('[data-i18n-html]').forEach(el=>{ el.innerHTML = t(el.getAttribute('data-i18n-html')); });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{ el.placeholder = t(el.getAttribute('data-i18n-placeholder')); });
@@ -1105,6 +1126,9 @@
         const placeholderOpt = '<option value="" disabled'+(item[f.key]?'':' selected')+' hidden>'+phText+'</option>';
         return '<div><label>'+fieldLabel(f)+'</label><select data-field="'+f.key+'" data-idx="'+idx+'">'+placeholderOpt+opts+'</select></div>';
       }
+      if(f.type==='month'){
+        return '<div><label>'+fieldLabel(f)+'</label><input type="month" lang="'+state.cvLang+'" data-field="'+f.key+'" data-idx="'+idx+'" value="'+val+'" placeholder="'+fieldPh(f)+'"></div>';
+      }
       return '<div><label>'+fieldLabel(f)+'</label><input type="text" data-field="'+f.key+'" data-idx="'+idx+'" value="'+val+'" placeholder="'+fieldPh(f)+'"></div>';
     }
     document.getElementById(addBtnId).addEventListener('click', addItem);
@@ -1127,13 +1151,13 @@
 
   makeRepeatable('education-list','add-education', state.education, [
     {row:[{key:'school',labelI18n:'field_school',phI18n:'ph_school'},{key:'major',labelI18n:'field_major',phI18n:'ph_major'}]},
-    {row:[{key:'start',labelI18n:'field_start_year',phI18n:'ph_start_year'},{key:'end',labelI18n:'field_end_year',phI18n:'ph_end_year'}]},
+    {row:[{key:'start',labelI18n:'field_start_year',phI18n:'ph_start_year',type:'month',dateDisplay:'year'},{key:'end',labelI18n:'field_end_year',phI18n:'ph_end_year',type:'month',dateDisplay:'year'}]},
     {key:'desc', labelI18n:'field_edu_details', type:'textarea', phI18n:'ph_edu_details'}
   ], 'card_education');
 
   makeRepeatable('experience-list','add-experience', state.experience, [
     {row:[{key:'company',labelI18n:'field_company',phI18n:'ph_company'},{key:'position',labelI18n:'field_position',phI18n:'ph_position'}]},
-    {row:[{key:'start',labelI18n:'field_start_date',phI18n:'ph_start_date'},{key:'end',labelI18n:'field_end_date',phI18n:'ph_end_date'}]},
+    {row:[{key:'start',labelI18n:'field_start_date',phI18n:'ph_start_date',type:'month',dateDisplay:'monthyear'},{key:'end',labelI18n:'field_end_date',phI18n:'ph_end_date',type:'month',dateDisplay:'monthyear'}]},
     {key:'desc', labelI18n:'field_exp_details', type:'textarea', phI18n:'ph_exp_details'}
   ], 'card_position');
 
@@ -1187,7 +1211,7 @@
       <div class="entry">
         <div class="entry-header">
           <span class="entry-title">${esc(x.school)||t('ph_school_preview')}</span>
-          <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
+          <span class="entry-date">${[formatMonthValue(x.start,'year'),formatMonthValue(x.end,'year')].filter(Boolean).join(' – ')}</span>
         </div>
         ${x.major?'<div class="entry-subtitle">'+esc(x.major)+'</div>':''}
         ${x.desc ? '<ul>'+x.desc.split('\n').filter(Boolean).map(l=>'<li>'+esc(l)+'</li>').join('')+'</ul>' : ''}
@@ -1199,7 +1223,7 @@
       <div class="entry">
         <div class="entry-header">
           <span class="entry-title">${esc(x.company)||t('ph_company_preview')}</span>
-          <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
+          <span class="entry-date">${[formatMonthValue(x.start,'monthyear'),formatMonthValue(x.end,'monthyear')].filter(Boolean).join(' – ')}</span>
         </div>
         ${x.position?'<div class="entry-subtitle">'+esc(x.position)+'</div>':''}
         ${x.desc ? '<ul>'+x.desc.split('\n').filter(Boolean).map(l=>'<li>'+esc(l)+'</li>').join('')+'</ul>' : ''}
