@@ -147,7 +147,7 @@
     box-shadow:0 0 0 1px #d8d4c4;flex-shrink:0;
   }
   .color-swatch.active{border-color:#fff;box-shadow:0 0 0 2px #3b3222;}
-  .color-swatch-wrap{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;align-items:center;margin-top:8px;max-width:280px;}
+  .color-swatch-wrap{display:grid;grid-template-columns:repeat(auto-fill,24px);gap:8px;align-items:center;margin-top:8px;max-width:280px;}
   .custom-color-wrap{display:flex;align-items:center;gap:8px;margin-top:10px;}
   .custom-color-wrap input[type=color]{width:34px;height:28px;padding:0;border:1px solid #d8d4c4;border-radius:4px;cursor:pointer;background:#fff;}
   .custom-color-wrap label{margin:0;}
@@ -318,7 +318,11 @@
     .template-option{min-width:calc(50% - 4px);flex:1 1 calc(50% - 4px);}
     .shape-option{min-width:calc(33.333% - 6px);flex:1 1 calc(33.333% - 6px);}
     .font-option-row{grid-template-columns:1fr;max-height:240px;}
-    .color-swatch-wrap{grid-template-columns:repeat(6,1fr);max-width:100%;}
+    .color-swatch-wrap{max-width:100%;}
+    .custom-color-wrap{flex-wrap:wrap;}
+    .custom-color-wrap #custom-color-hex{flex:0 1 88px;}
+    .custom-color-wrap #rgb-wrap{flex:1 1 100%;}
+    .custom-color-wrap #rgb-wrap input{flex:1;min-width:0;}
     .lang-option{padding:12px 6px;}
 
     /* Wizard progress + dots */
@@ -446,6 +450,12 @@
       <div class="custom-color-wrap">
         <label style="margin:0;" data-i18n="label_custom">Kustom:</label>
         <input type="color" id="custom-color-input" value="#3b3222">
+        <input type="text" id="custom-color-hex" value="#3b3222" maxlength="7" placeholder="#RRGGBB" style="width:88px;font-family:'Inter',Arial,sans-serif;font-size:12.5px;padding:6px 8px;border:1px solid #d8d4c4;border-radius:4px;background:#fff;color:#2b2b28;text-transform:uppercase;">
+        <div class="rgb-wrap" id="rgb-wrap" style="display:flex;align-items:center;gap:4px;">
+          <input type="number" id="rgb-r" min="0" max="255" value="59" title="Red" style="width:48px;font-family:'Inter',Arial,sans-serif;font-size:12.5px;padding:6px 5px;border:1px solid #d8d4c4;border-radius:4px;background:#fff;color:#2b2b28;">
+          <input type="number" id="rgb-g" min="0" max="255" value="50" title="Green" style="width:48px;font-family:'Inter',Arial,sans-serif;font-size:12.5px;padding:6px 5px;border:1px solid #d8d4c4;border-radius:4px;background:#fff;color:#2b2b28;">
+          <input type="number" id="rgb-b" min="0" max="255" value="34" title="Blue" style="width:48px;font-family:'Inter',Arial,sans-serif;font-size:12.5px;padding:6px 5px;border:1px solid #d8d4c4;border-radius:4px;background:#fff;color:#2b2b28;">
+        </div>
       </div>
 
       <label style="margin-top:18px;" data-i18n="label_font">Font CV</label>
@@ -905,6 +915,8 @@
       state.sidebarColor = sw.dataset.color;
       state.sidebarAccent = sw.dataset.accent;
       document.getElementById('custom-color-input').value = sw.dataset.color;
+      document.getElementById('custom-color-hex').value = sw.dataset.color;
+      syncRgbFromHex(sw.dataset.color);
       applyDesign();
     });
   });
@@ -912,8 +924,60 @@
     document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
     state.sidebarColor = e.target.value;
     state.sidebarAccent = isLight(e.target.value) ? '#8a6d22' : '#d3a75c';
+    document.getElementById('custom-color-hex').value = e.target.value;
+    syncRgbFromHex(e.target.value);
     applyDesign();
   });
+  const hexInput = document.getElementById('custom-color-hex');
+  const rgbR = document.getElementById('rgb-r'), rgbG = document.getElementById('rgb-g'), rgbB = document.getElementById('rgb-b');
+  function hexToRgb(hex){
+    const m = /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/.exec(hex);
+    if(!m) return null;
+    return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) };
+  }
+  function rgbToHex(r,g,b){
+    const c = v => Math.max(0,Math.min(255, Math.round(v||0))).toString(16).padStart(2,'0');
+    return '#'+c(r)+c(g)+c(b);
+  }
+  function syncRgbFromHex(hex){
+    const rgb = hexToRgb(hex);
+    if(!rgb) return;
+    rgbR.value = rgb.r; rgbG.value = rgb.g; rgbB.value = rgb.b;
+  }
+  function applyHexIfValid(val){
+    if(/^#[0-9a-fA-F]{6}$/.test(val)){
+      document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
+      state.sidebarColor = val;
+      state.sidebarAccent = isLight(val) ? '#8a6d22' : '#d3a75c';
+      document.getElementById('custom-color-input').value = val;
+      syncRgbFromHex(val);
+      applyDesign();
+    }
+  }
+  hexInput.addEventListener('input', (e)=>{
+    let v = e.target.value.trim();
+    if(v && v[0] !== '#') v = '#' + v;
+    applyHexIfValid(v);
+  });
+  hexInput.addEventListener('blur', (e)=>{
+    e.target.value = document.getElementById('custom-color-input').value;
+  });
+  function applyRgbInputs(){
+    const hex = rgbToHex(rgbR.value, rgbG.value, rgbB.value);
+    document.querySelectorAll('#color-picker .color-swatch').forEach(s=>s.classList.remove('active'));
+    state.sidebarColor = hex;
+    state.sidebarAccent = isLight(hex) ? '#8a6d22' : '#d3a75c';
+    document.getElementById('custom-color-input').value = hex;
+    document.getElementById('custom-color-hex').value = hex;
+    applyDesign();
+  }
+  [rgbR, rgbG, rgbB].forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      inp.value = Math.max(0, Math.min(255, +inp.value || 0));
+      applyRgbInputs();
+    });
+  });
+  syncRgbFromHex(document.getElementById('custom-color-input').value);
 
   // ---------------- photo ----------------
   const photoInput = document.getElementById('photo-input');
@@ -1202,8 +1266,8 @@
     gate.addEventListener('click', ()=>{
       const now = Date.now();
       tapTimes.push(now);
-      tapTimes = tapTimes.filter(tm => now - tm <= 1000);
-      if(tapTimes.length >= 3){ unlock(); }
+      tapTimes = tapTimes.filter(tm => now - tm <= 1500);
+      if(tapTimes.length >= 6){ unlock(); }
     });
   })();
 
