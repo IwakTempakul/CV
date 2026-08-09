@@ -685,6 +685,8 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function(){
   const state = { photo:null, competencies:[], languages:[], certs:[], education:[], experience:[], training:[], org:[], addskills:[],
@@ -1162,8 +1164,58 @@
     el.className = val ? '' : 'placeholder';
   }
 
-  document.getElementById('download-btn').addEventListener('click', ()=>window.print());
-  document.getElementById('download-btn-step').addEventListener('click', ()=>window.print());
+  // ---------------- download as true A4 PDF (consistent on desktop & mobile) ----------------
+  async function downloadCvAsPdf(btn){
+    const page = document.getElementById('cv-page');
+    if(!window.html2canvas || !window.jspdf){ window.print(); return; }
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = (state.cvLang==='en') ? 'Preparing PDF…' : 'Menyiapkan PDF…';
+    const prevTransform = page.style.transform;
+    const prevTransformOrigin = page.style.transformOrigin;
+    const prevBoxShadow = page.style.boxShadow;
+    // reset scaling/shadow so the capture is full-resolution and clean
+    page.style.transform = 'none';
+    page.style.transformOrigin = 'top left';
+    page.style.boxShadow = 'none';
+    try{
+      const canvas = await window.html2canvas(page, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        windowWidth: page.scrollWidth,
+        windowHeight: page.scrollHeight
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+      const pageWidthMm = 210, pageHeightMm = 297;
+      const imgHeightMm = (canvas.height * pageWidthMm) / canvas.width;
+      let heightLeft = imgHeightMm;
+      let position = 0;
+      pdf.addImage(imgData, 'JPEG', 0, position, pageWidthMm, imgHeightMm);
+      heightLeft -= pageHeightMm;
+      while(heightLeft > 0){
+        position = heightLeft - imgHeightMm;
+        pdf.addPage('a4', 'portrait');
+        pdf.addImage(imgData, 'JPEG', 0, position, pageWidthMm, imgHeightMm);
+        heightLeft -= pageHeightMm;
+      }
+      pdf.save('CV.pdf');
+    }catch(err){
+      console.error('PDF generation failed, falling back to print dialog', err);
+      window.print();
+    }finally{
+      page.style.transform = prevTransform;
+      page.style.transformOrigin = prevTransformOrigin;
+      page.style.boxShadow = prevBoxShadow;
+      if(window.__applyCvScale) window.__applyCvScale();
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  }
+  document.getElementById('download-btn').addEventListener('click', (e)=>downloadCvAsPdf(e.currentTarget));
+  document.getElementById('download-btn-step').addEventListener('click', (e)=>downloadCvAsPdf(e.currentTarget));
   document.getElementById('clear-all-btn').addEventListener('click', ()=>{
     const msg = state.cvLang==='en' ? 'Clear everything and start over?' : 'Hapus semua dan mulai dari awal?';
     if(!confirm(msg)) return;
