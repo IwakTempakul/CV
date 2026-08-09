@@ -726,7 +726,26 @@
       progress_step:'Langkah', progress_of:'dari',
       review_edit:'Edit', review_filled:'Terisi', review_empty:'Kosong',
       review_names:['Bahasa CV','Tampilan & warna','Foto','Informasi pribadi','Profil singkat','Ringkasan profesional','Kompetensi utama','Bahasa yang dikuasai','Sertifikasi','Pendidikan','Pengalaman kerja/magang','Pelatihan & workshop','Pengalaman organisasi','Keterampilan tambahan'],
-      level_select_ph:'Pilih tingkat', level_basic:'Dasar', level_elementary:'Pemula', level_intermediate:'Menengah', level_upper_intermediate:'Menengah Atas', level_advanced:'Mahir', level_fluent:'Fasih', level_native:'Bahasa Ibu'
+      level_select_ph:'Pilih tingkat', level_basic:'Dasar', level_elementary:'Pemula', level_intermediate:'Menengah', level_upper_intermediate:'Menengah Atas', level_advanced:'Mahir', level_fluent:'Fasih', level_native:'Bahasa Ibu',
+      btn_remove:'Hapus',
+      card_competency:'Kompetensi', card_language:'Bahasa', card_certification:'Sertifikasi', card_education:'Pendidikan', card_experience:'Posisi', card_training:'Pelatihan', card_org:'Kegiatan', card_addskill:'Keterampilan',
+      field_competency:'Kompetensi', ph_competency:'mis. Pengoperasian mesin CNC',
+      field_language:'Bahasa', ph_language:'mis. Bahasa Inggris',
+      field_proficiency:'Tingkat kemahiran',
+      field_certification:'Sertifikasi', ph_certification:'mis. Sertifikat Operator CNC',
+      field_school:'Sekolah / institusi', ph_school:'mis. SMK Negeri 6 Samarinda',
+      field_major:'Jurusan / program', ph_major:'mis. Teknik Mesin',
+      field_start_year:'Tahun mulai', ph_start_year:'mis. 2023',
+      field_end_year:'Tahun selesai', ph_end_year:'mis. 2026',
+      field_edu_desc:'Detail (satu poin per baris)', ph_edu_desc:'Mempelajari mata pelajaran inti...\nMemperoleh pengalaman praktik langsung...',
+      field_company:'Perusahaan / institusi', ph_company:'mis. PT Contoh Manufaktur',
+      field_position:'Posisi / divisi', ph_position:'mis. Magang Produksi',
+      field_start_date:'Tanggal mulai', ph_start_date:'mis. Jan 2025',
+      field_end_date:'Tanggal selesai', ph_end_date:'mis. Mar 2025',
+      field_exp_desc:'Tugas / pencapaian (satu poin per baris)', ph_exp_desc:'Mengoperasikan mesin bubut/CNC...\nMenggunakan alat/software...',
+      field_training:'Pelatihan / workshop', ph_training:'mis. Pelatihan K3, 2025',
+      field_org:'Kegiatan', ph_org:'mis. Anggota OSIS, 2024',
+      field_addskill:'Keterampilan', ph_addskill:'mis. Microsoft Excel'
     },
     en: {
       app_title:'Step-by-Step Wizard',
@@ -756,7 +775,26 @@
       progress_step:'Step', progress_of:'of',
       review_edit:'Edit', review_filled:'Filled', review_empty:'Empty',
       review_names:['CV language','Look & color','Photo','Personal information','Short profile','Professional summary','Core competencies','Languages','Certifications','Education','Work/internship experience','Training & workshops','Organizational experience','Additional skills'],
-      level_select_ph:'Select level', level_basic:'Basic', level_elementary:'Elementary', level_intermediate:'Intermediate', level_upper_intermediate:'Upper Intermediate', level_advanced:'Advanced', level_fluent:'Fluent', level_native:'Native'
+      level_select_ph:'Select level', level_basic:'Basic', level_elementary:'Elementary', level_intermediate:'Intermediate', level_upper_intermediate:'Upper Intermediate', level_advanced:'Advanced', level_fluent:'Fluent', level_native:'Native',
+      btn_remove:'Remove',
+      card_competency:'Competency', card_language:'Language', card_certification:'Certification', card_education:'Education', card_experience:'Position', card_training:'Training', card_org:'Activity', card_addskill:'Skill',
+      field_competency:'Competency', ph_competency:'e.g. CNC machine operation',
+      field_language:'Language', ph_language:'e.g. English',
+      field_proficiency:'Proficiency',
+      field_certification:'Certification', ph_certification:'e.g. CNC Operator Certificate',
+      field_school:'School / institution', ph_school:'e.g. SMK Negeri 6 Samarinda',
+      field_major:'Major / program', ph_major:'e.g. Mechanical Engineering',
+      field_start_year:'Start year', ph_start_year:'e.g. 2023',
+      field_end_year:'End year', ph_end_year:'e.g. 2026',
+      field_edu_desc:'Details (one point per line)', ph_edu_desc:'Studied core subjects...\nGained hands-on experience...',
+      field_company:'Company / institution', ph_company:'e.g. PT Example Manufacturing',
+      field_position:'Position / division', ph_position:'e.g. Production Intern',
+      field_start_date:'Start date', ph_start_date:'e.g. Jan 2025',
+      field_end_date:'End date', ph_end_date:'e.g. Mar 2025',
+      field_exp_desc:'Tasks / achievements (one point per line)', ph_exp_desc:'Operated lathe/CNC machines...\nUsed tools/software...',
+      field_training:'Training / workshop', ph_training:'e.g. Workshop Safety (K3) Training, 2025',
+      field_org:'Activity', ph_org:'e.g. Member of OSIS, 2024',
+      field_addskill:'Skill', ph_addskill:'e.g. Microsoft Excel'
     }
   };
   function t(key){ return (I18N[state.cvLang] && I18N[state.cvLang][key]) || I18N.id[key] || key; }
@@ -768,7 +806,14 @@
     document.querySelectorAll('.lang-option').forEach(o=>o.classList.toggle('active', o.dataset.lang===state.cvLang));
     updateProgress();
     renderReview();
+    if(typeof renderCompetenciesList === 'function'){ renderCompetenciesList(); }
     if(typeof renderLanguagesList === 'function'){ renderLanguagesList(); }
+    if(typeof renderCertsList === 'function'){ renderCertsList(); }
+    if(typeof renderEducationList === 'function'){ renderEducationList(); }
+    if(typeof renderExperienceList === 'function'){ renderExperienceList(); }
+    if(typeof renderTrainingList === 'function'){ renderTrainingList(); }
+    if(typeof renderOrgList === 'function'){ renderOrgList(); }
+    if(typeof renderAddskillsList === 'function'){ renderAddskillsList(); }
     render();
   }
 
@@ -1013,9 +1058,10 @@
     function renderList(){
       const container = document.getElementById(containerId);
       container.innerHTML = '';
+      const cardLabelText = t(cardLabelKey);
       arr.forEach((item, idx)=>{
         const card = document.createElement('div'); card.className='item-card';
-        let html = '<div class="item-card-head"><span class="item-card-label">'+cardLabelKey+' '+(idx+1)+'</span><span class="btn-remove" data-idx="'+idx+'">'+ (state.cvLang==='en'?'Remove':'Hapus') +'</span></div>';
+        let html = '<div class="item-card-head"><span class="item-card-label">'+cardLabelText+' '+(idx+1)+'</span><span class="btn-remove" data-idx="'+idx+'">'+ t('btn_remove') +'</span></div>';
         fieldsDef.forEach(f=>{
           if(f.row){
             html += '<div class="row2">';
@@ -1035,8 +1081,10 @@
     }
     function fieldHtml(f,item,idx){
       const val = (item[f.key]||'').replace(/"/g,'&quot;');
+      const labelText = f.labelI18n ? t(f.labelI18n) : (f.label||'');
+      const phText0 = f.phI18n && f.type!=='select' ? t(f.phI18n) : (f.ph||'');
       if(f.type==='textarea'){
-        return '<div style="grid-column:1/-1;"><label>'+f.label+'</label><textarea data-field="'+f.key+'" data-idx="'+idx+'" placeholder="'+(f.ph||'')+'">'+(item[f.key]||'')+'</textarea></div>';
+        return '<div style="grid-column:1/-1;"><label>'+labelText+'</label><textarea data-field="'+f.key+'" data-idx="'+idx+'" placeholder="'+phText0+'">'+(item[f.key]||'')+'</textarea></div>';
       }
       if(f.type==='select'){
         const optList = f.optionsI18n ? f.optionsI18n.map(k=>({value:k, label:t(k)})) : (f.options||[]).map(o=>({value:o, label:o}));
@@ -1046,50 +1094,50 @@
         }).join('');
         const phText = f.phI18n ? t(f.phI18n) : (f.ph||'');
         const placeholderOpt = '<option value="" disabled'+(item[f.key]?'':' selected')+' hidden>'+phText+'</option>';
-        return '<div><label>'+f.label+'</label><select data-field="'+f.key+'" data-idx="'+idx+'">'+placeholderOpt+opts+'</select></div>';
+        return '<div><label>'+labelText+'</label><select data-field="'+f.key+'" data-idx="'+idx+'">'+placeholderOpt+opts+'</select></div>';
       }
-      return '<div><label>'+f.label+'</label><input type="text" data-field="'+f.key+'" data-idx="'+idx+'" value="'+val+'" placeholder="'+(f.ph||'')+'"></div>';
+      return '<div><label>'+labelText+'</label><input type="text" data-field="'+f.key+'" data-idx="'+idx+'" value="'+val+'" placeholder="'+phText0+'"></div>';
     }
     document.getElementById(addBtnId).addEventListener('click', addItem);
     renderList();
     return renderList;
   }
 
-  makeRepeatable('competencies-list','add-competency', state.competencies, [
-    {key:'name', label:'Competency', ph:'e.g. CNC machine operation'}
-  ], 'Competency');
+  const renderCompetenciesList = makeRepeatable('competencies-list','add-competency', state.competencies, [
+    {key:'name', labelI18n:'field_competency', phI18n:'ph_competency'}
+  ], 'card_competency');
 
   const renderLanguagesList = makeRepeatable('languages-list','add-language', state.languages, [
-    {row:[{key:'name',label:'Language',ph:'e.g. English'},{key:'level',label:'Proficiency',type:'select',phI18n:'level_select_ph', optionsI18n:['level_basic','level_elementary','level_intermediate','level_upper_intermediate','level_advanced','level_fluent','level_native']}]}
-  ], 'Language');
+    {row:[{key:'name',labelI18n:'field_language',phI18n:'ph_language'},{key:'level',labelI18n:'field_proficiency',type:'select',phI18n:'level_select_ph', optionsI18n:['level_basic','level_elementary','level_intermediate','level_upper_intermediate','level_advanced','level_fluent','level_native']}]}
+  ], 'card_language');
 
-  makeRepeatable('certs-list','add-cert', state.certs, [
-    {key:'name', label:'Certification', ph:'e.g. CNC Operator Certificate'}
-  ], 'Certification');
+  const renderCertsList = makeRepeatable('certs-list','add-cert', state.certs, [
+    {key:'name', labelI18n:'field_certification', phI18n:'ph_certification'}
+  ], 'card_certification');
 
-  makeRepeatable('education-list','add-education', state.education, [
-    {row:[{key:'school',label:'School / institution',ph:'e.g. SMK Negeri 6 Samarinda'},{key:'major',label:'Major / program',ph:'e.g. Mechanical Engineering'}]},
-    {row:[{key:'start',label:'Start year',ph:'e.g. 2023'},{key:'end',label:'End year',ph:'e.g. 2026'}]},
-    {key:'desc', label:'Details (one point per line)', type:'textarea', ph:'Studied core subjects...\nGained hands-on experience...'}
-  ], 'Education');
+  const renderEducationList = makeRepeatable('education-list','add-education', state.education, [
+    {row:[{key:'school',labelI18n:'field_school',phI18n:'ph_school'},{key:'major',labelI18n:'field_major',phI18n:'ph_major'}]},
+    {row:[{key:'start',labelI18n:'field_start_year',phI18n:'ph_start_year'},{key:'end',labelI18n:'field_end_year',phI18n:'ph_end_year'}]},
+    {key:'desc', labelI18n:'field_edu_desc', type:'textarea', phI18n:'ph_edu_desc'}
+  ], 'card_education');
 
-  makeRepeatable('experience-list','add-experience', state.experience, [
-    {row:[{key:'company',label:'Company / institution',ph:'e.g. PT Example Manufacturing'},{key:'position',label:'Position / division',ph:'e.g. Production Intern'}]},
-    {row:[{key:'start',label:'Start date',ph:'e.g. Jan 2025'},{key:'end',label:'End date',ph:'e.g. Mar 2025'}]},
-    {key:'desc', label:'Tasks / achievements (one point per line)', type:'textarea', ph:'Operated lathe/CNC machines...\nUsed tools/software...'}
-  ], 'Position');
+  const renderExperienceList = makeRepeatable('experience-list','add-experience', state.experience, [
+    {row:[{key:'company',labelI18n:'field_company',phI18n:'ph_company'},{key:'position',labelI18n:'field_position',phI18n:'ph_position'}]},
+    {row:[{key:'start',labelI18n:'field_start_date',phI18n:'ph_start_date'},{key:'end',labelI18n:'field_end_date',phI18n:'ph_end_date'}]},
+    {key:'desc', labelI18n:'field_exp_desc', type:'textarea', phI18n:'ph_exp_desc'}
+  ], 'card_experience');
 
-  makeRepeatable('training-list','add-training', state.training, [
-    {key:'name', label:'Training / workshop', ph:'e.g. Workshop Safety (K3) Training, 2025'}
-  ], 'Training');
+  const renderTrainingList = makeRepeatable('training-list','add-training', state.training, [
+    {key:'name', labelI18n:'field_training', phI18n:'ph_training'}
+  ], 'card_training');
 
-  makeRepeatable('org-list','add-org', state.org, [
-    {key:'name', label:'Activity', ph:'e.g. Member of OSIS, 2024'}
-  ], 'Activity');
+  const renderOrgList = makeRepeatable('org-list','add-org', state.org, [
+    {key:'name', labelI18n:'field_org', phI18n:'ph_org'}
+  ], 'card_org');
 
-  makeRepeatable('addskills-list','add-addskill', state.addskills, [
-    {key:'name', label:'Skill', ph:'e.g. Microsoft Excel'}
-  ], 'Skill');
+  const renderAddskillsList = makeRepeatable('addskills-list','add-addskill', state.addskills, [
+    {key:'name', labelI18n:'field_addskill', phI18n:'ph_addskill'}
+  ], 'card_addskill');
 
   // ---------------- render preview ----------------
   function render(){
@@ -1128,7 +1176,7 @@
     document.getElementById('p-education').innerHTML = validEdu.map(x=>`
       <div class="entry">
         <div class="entry-header">
-          <span class="entry-title">${esc(x.school)||'School / Institution'}</span>
+          <span class="entry-title">${esc(x.school)||t('field_school')}</span>
           <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
         </div>
         ${x.major?'<div class="entry-subtitle">'+esc(x.major)+'</div>':''}
@@ -1140,7 +1188,7 @@
     document.getElementById('p-experience').innerHTML = validExp.map(x=>`
       <div class="entry">
         <div class="entry-header">
-          <span class="entry-title">${esc(x.company)||'Company / Institution'}</span>
+          <span class="entry-title">${esc(x.company)||t('field_company')}</span>
           <span class="entry-date">${[esc(x.start),esc(x.end)].filter(Boolean).join(' – ')}</span>
         </div>
         ${x.position?'<div class="entry-subtitle">'+esc(x.position)+'</div>':''}
@@ -1171,20 +1219,37 @@
     const originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = (state.cvLang==='en') ? 'Preparing PDF…' : 'Menyiapkan PDF…';
-    const prevTransform = page.style.transform;
-    const prevTransformOrigin = page.style.transformOrigin;
-    const prevBoxShadow = page.style.boxShadow;
-    // reset scaling/shadow so the capture is full-resolution and clean
-    page.style.transform = 'none';
-    page.style.transformOrigin = 'top left';
-    page.style.boxShadow = 'none';
+
+    // Build an isolated, offscreen clone at full fixed width (850px), completely detached
+    // from the mobile scaling wrapper / scrollable ancestors / responsive media queries
+    // that were causing the sidebar to render shifted on phones.
+    const clone = page.cloneNode(true);
+    clone.id = 'cv-page-pdf-clone';
+    clone.style.transform = 'none';
+    clone.style.margin = '0';
+    clone.style.boxShadow = 'none';
+    clone.style.width = page.offsetWidth + 'px';
+
+    const captureHost = document.createElement('div');
+    captureHost.style.position = 'fixed';
+    captureHost.style.top = '0';
+    captureHost.style.left = '0';
+    captureHost.style.zIndex = '-1';
+    captureHost.style.opacity = '0';
+    captureHost.style.pointerEvents = 'none';
+    captureHost.style.background = '#ffffff';
+    captureHost.appendChild(clone);
+    document.body.appendChild(captureHost);
+
     try{
-      const canvas = await window.html2canvas(page, {
+      const canvas = await window.html2canvas(clone, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: page.scrollWidth,
-        windowHeight: page.scrollHeight
+        width: clone.offsetWidth,
+        height: clone.offsetHeight,
+        windowWidth: clone.offsetWidth,
+        windowHeight: clone.offsetHeight
       });
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const { jsPDF } = window.jspdf;
@@ -1208,10 +1273,7 @@
       console.error('PDF generation failed, falling back to print dialog', err);
       window.print();
     }finally{
-      page.style.transform = prevTransform;
-      page.style.transformOrigin = prevTransformOrigin;
-      page.style.boxShadow = prevBoxShadow;
-      if(window.__applyCvScale) window.__applyCvScale();
+      document.body.removeChild(captureHost);
       btn.disabled = false;
       btn.textContent = originalText;
     }
