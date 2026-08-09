@@ -1238,9 +1238,22 @@
   }
   window.addEventListener('beforeprint', fitCvToOnePage);
   window.addEventListener('afterprint', resetCvScale);
+  // Fallbacks: some mobile browsers (Chrome/Android, iOS Safari share-sheet) don't
+  // reliably fire beforeprint/afterprint before opening their native print/PDF UI,
+  // so we also apply the fit synchronously right when the button is pressed, and
+  // reset again when the tab regains focus/visibility (i.e. user returned from
+  // the print sheet) as a safety net.
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) resetCvScale(); });
+  window.addEventListener('focus', resetCvScale);
 
-  document.getElementById('download-btn').addEventListener('click', ()=>window.print());
-  document.getElementById('download-btn-step').addEventListener('click', ()=>window.print());
+  function triggerPrint(){
+    fitCvToOnePage();
+    // give mobile browsers a tick to apply the layout change before the native
+    // print/share sheet captures the page
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ window.print(); }); });
+  }
+  document.getElementById('download-btn').addEventListener('click', triggerPrint);
+  document.getElementById('download-btn-step').addEventListener('click', triggerPrint);
   document.getElementById('clear-all-btn').addEventListener('click', ()=>{
     const msg = state.cvLang==='en' ? 'Clear everything and start over?' : 'Hapus semua dan mulai dari awal?';
     if(!confirm(msg)) return;
